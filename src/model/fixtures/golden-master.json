@@ -1,0 +1,340 @@
+{
+ "$comment": [
+  "GOLDEN MASTER — outputs of THIS engine, committed so that any future change to the numbers",
+  "is caught by the test suite.",
+  "",
+  "These values were produced BY the engine. They prove the implementation has not drifted.",
+  "They are NOT evidence that the model is physically correct — treating them that way would",
+  "be circular. Physical validation comes from bench measurements only.",
+  "",
+  "Regenerate deliberately, and only when you MEANT to change the model:",
+  "  npx tsx gen-golden.ts"
+ ],
+ "generatedBy": "gen-golden.ts",
+ "cases": [
+  {
+   "motorId": "example-500kv-outrunner",
+   "batteryId": "lipo-3s-2200",
+   "propellerId": "apc-10x5e",
+   "rpm": 5346.051621437074,
+   "thrustN": 4.857535647892868,
+   "currentA": 5.069903195914575,
+   "inputPowerW": 55.75016350705292
+  },
+  {
+   "motorId": "example-500kv-outrunner",
+   "batteryId": "lipo-3s-2200",
+   "propellerId": "apc-12x6e",
+   "rpm": 5134.055399894715,
+   "thrustN": 9.289573730378004,
+   "currentA": 10.33986576532912,
+   "inputPowerW": 112.58565677605047
+  },
+  {
+   "motorId": "example-500kv-outrunner",
+   "batteryId": "lipo-3s-2200",
+   "propellerId": "apc-13x6.5e",
+   "rpm": 4981.884741783143,
+   "thrustN": 12.047875226271543,
+   "currentA": 14.122639187311709,
+   "inputPowerW": 152.6816576188533
+  },
+  {
+   "motorId": "example-500kv-outrunner",
+   "batteryId": "lipo-3s-2200",
+   "propellerId": "apc-15x10e",
+   "rpm": 4430.963444709779,
+   "thrustN": 19.004812681642708,
+   "currentA": 27.81785787162134,
+   "inputPowerW": 292.9498156725162
+  },
+  {
+   "motorId": "example-500kv-outrunner",
+   "batteryId": "lipo-4s-5000",
+   "propellerId": "apc-10x5e",
+   "rpm": 7105.196475982666,
+   "thrustN": 8.58028836744807,
+   "currentA": 8.188986778259288,
+   "inputPowerW": 120.3922902647834
+  },
+  {
+   "motorId": "example-500kv-outrunner",
+   "batteryId": "lipo-4s-5000",
+   "propellerId": "apc-12x6e",
+   "rpm": 6777.968692779541,
+   "thrustN": 16.191004805303926,
+   "currentA": 17.278647422790545,
+   "inputPowerW": 252.1413619761668
+  },
+  {
+   "motorId": "example-500kv-outrunner",
+   "batteryId": "lipo-4s-5000",
+   "propellerId": "apc-13x6.5e",
+   "rpm": 6547.911357879639,
+   "thrustN": 20.81271286848214,
+   "currentA": 23.669128947787822,
+   "inputPowerW": 343.5803764454957
+  },
+  {
+   "motorId": "example-500kv-outrunner",
+   "batteryId": "lipo-4s-5000",
+   "propellerId": "apc-15x10e",
+   "rpm": 5742.460155487061,
+   "thrustN": 31.920026270881184,
+   "currentA": 46.042773458692764,
+   "inputPowerW": 655.9938033354309
+  },
+  {
+   "motorId": "example-500kv-outrunner",
+   "batteryId": "lipo-6s-5000",
+   "propellerId": "apc-10x5e",
+   "rpm": 10454.058051109316,
+   "thrustN": 18.574601931207088,
+   "currentA": 16.562614074120145,
+   "inputPowerW": 362.75226911603886
+  },
+  {
+   "motorId": "example-500kv-outrunner",
+   "batteryId": "lipo-6s-5000",
+   "propellerId": "apc-12x6e",
+   "rpm": 9747.875046730043,
+   "thrustN": 33.488414905403,
+   "currentA": 34.66987059666561,
+   "inputPowerW": 748.035128556565
+  },
+  {
+   "motorId": "example-500kv-outrunner",
+   "batteryId": "lipo-6s-5000",
+   "propellerId": "apc-13x6.5e",
+   "rpm": 9283.767771720888,
+   "thrustN": 41.838070389546154,
+   "currentA": 46.5700571353619,
+   "inputPowerW": 994.8174044163986
+  },
+  {
+   "motorId": "example-500kv-outrunner",
+   "batteryId": "lipo-6s-5000",
+   "propellerId": "apc-15x10e",
+   "rpm": 7810.904002189638,
+   "thrustN": 59.056793021699995,
+   "currentA": 84.33579481565036,
+   "inputPowerW": 1744.2291717380638
+  },
+  {
+   "motorId": "example-700kv-outrunner",
+   "batteryId": "lipo-3s-2200",
+   "propellerId": "apc-10x5e",
+   "rpm": 7200.978598594666,
+   "thrustN": 8.813182041975306,
+   "currentA": 11.537761134486054,
+   "inputPowerW": 125.34624089286768
+  },
+  {
+   "motorId": "example-700kv-outrunner",
+   "batteryId": "lipo-3s-2200",
+   "propellerId": "apc-12x6e",
+   "rpm": 6634.065356254579,
+   "thrustN": 15.510799217163566,
+   "currentA": 23.032776186543128,
+   "inputPowerW": 244.812499739414
+  },
+  {
+   "motorId": "example-700kv-outrunner",
+   "batteryId": "lipo-3s-2200",
+   "propellerId": "apc-13x6.5e",
+   "rpm": 6273.87767314911,
+   "thrustN": 19.10711876144967,
+   "currentA": 30.336120913105614,
+   "inputPowerW": 317.90702829799267
+  },
+  {
+   "motorId": "example-700kv-outrunner",
+   "batteryId": "lipo-3s-2200",
+   "propellerId": "apc-15x10e",
+   "rpm": 5180.109915733338,
+   "thrustN": 25.974381157299273,
+   "currentA": 52.5139003261443,
+   "inputPowerW": 526.4965946493428
+  },
+  {
+   "motorId": "example-700kv-outrunner",
+   "batteryId": "lipo-4s-5000",
+   "propellerId": "apc-10x5e",
+   "rpm": 9523.222637176514,
+   "thrustN": 15.414078823778365,
+   "currentA": 19.280584396854536,
+   "inputPowerW": 280.89175785723637
+  },
+  {
+   "motorId": "example-700kv-outrunner",
+   "batteryId": "lipo-4s-5000",
+   "propellerId": "apc-12x6e",
+   "rpm": 8684.237079620361,
+   "thrustN": 26.578962659150534,
+   "currentA": 38.61204885667371,
+   "inputPowerW": 553.567639275849
+  },
+  {
+   "motorId": "example-700kv-outrunner",
+   "batteryId": "lipo-4s-5000",
+   "propellerId": "apc-13x6.5e",
+   "rpm": 8165.790500640869,
+   "thrustN": 32.368276614527886,
+   "currentA": 50.55782256587862,
+   "inputPowerW": 717.5826529037691
+  },
+  {
+   "motorId": "example-700kv-outrunner",
+   "batteryId": "lipo-4s-5000",
+   "propellerId": "apc-15x10e",
+   "rpm": 6644.161548614502,
+   "thrustN": 42.731449628402984,
+   "currentA": 85.61839749736173,
+   "inputPowerW": 1179.1861630807587
+  },
+  {
+   "motorId": "example-700kv-outrunner",
+   "batteryId": "lipo-6s-5000",
+   "propellerId": "apc-10x5e",
+   "rpm": 13701.40741825104,
+   "thrustN": 31.90656573722627,
+   "currentA": 38.62589457455801,
+   "inputPowerW": 830.6395843848603
+  },
+  {
+   "motorId": "example-700kv-outrunner",
+   "batteryId": "lipo-6s-5000",
+   "propellerId": "apc-12x6e",
+   "rpm": 12052.664008140566,
+   "thrustN": 51.196560429112466,
+   "currentA": 73.26336117351755,
+   "inputPowerW": 1529.8312564241469
+  },
+  {
+   "motorId": "example-700kv-outrunner",
+   "batteryId": "lipo-6s-5000",
+   "propellerId": "apc-13x6.5e",
+   "rpm": 11123.362298011782,
+   "thrustN": 60.06137568248918,
+   "currentA": 92.78650634429033,
+   "inputPowerW": 1904.892397170823
+  },
+  {
+   "motorId": "example-700kv-outrunner",
+   "batteryId": "lipo-6s-5000",
+   "propellerId": "apc-15x10e",
+   "rpm": 8658.587193489077,
+   "thrustN": 72.57070273739178,
+   "currentA": 144.56749593510347,
+   "inputPowerW": 2833.2027139022666
+  },
+  {
+   "motorId": "example-1000kv-outrunner",
+   "batteryId": "lipo-3s-2200",
+   "propellerId": "apc-10x5e",
+   "rpm": 9570.277333259584,
+   "thrustN": 15.56677853581944,
+   "currentA": 27.585162842859976,
+   "inputPowerW": 290.630601006646
+  },
+  {
+   "motorId": "example-1000kv-outrunner",
+   "batteryId": "lipo-3s-2200",
+   "propellerId": "apc-12x6e",
+   "rpm": 8305.731225013735,
+   "thrustN": 24.31254547309155,
+   "currentA": 50.38845331942446,
+   "inputPowerW": 507.3778180926244
+  },
+  {
+   "motorId": "example-1000kv-outrunner",
+   "batteryId": "lipo-3s-2200",
+   "propellerId": "apc-13x6.5e",
+   "rpm": 7615.712714195253,
+   "thrustN": 28.154266388237644,
+   "currentA": 62.83141007188889,
+   "inputPowerW": 616.6784817420651
+  },
+  {
+   "motorId": "example-1000kv-outrunner",
+   "batteryId": "lipo-3s-2200",
+   "propellerId": "apc-15x10e",
+   "rpm": 5843.620562553408,
+   "thrustN": 33.05455207267757,
+   "currentA": 94.78717018346315,
+   "inputPowerW": 868.3615238489429
+  },
+  {
+   "motorId": "example-1000kv-outrunner",
+   "batteryId": "lipo-4s-5000",
+   "propellerId": "apc-10x5e",
+   "rpm": 12603.27672958374,
+   "thrustN": 26.99707075506587,
+   "currentA": 46.73879298758001,
+   "inputPowerW": 665.519958976954
+  },
+  {
+   "motorId": "example-1000kv-outrunner",
+   "batteryId": "lipo-4s-5000",
+   "propellerId": "apc-12x6e",
+   "rpm": 10825.83875656128,
+   "thrustN": 41.30454031787423,
+   "currentA": 84.55662220082388,
+   "inputPowerW": 1165.6401402760391
+  },
+  {
+   "motorId": "example-1000kv-outrunner",
+   "batteryId": "lipo-4s-5000",
+   "propellerId": "apc-13x6.5e",
+   "rpm": 9879.01086807251,
+   "thrustN": 47.3750886998446,
+   "currentA": 104.70189642398918,
+   "inputPowerW": 1418.038221697683
+  },
+  {
+   "motorId": "example-1000kv-outrunner",
+   "batteryId": "lipo-4s-5000",
+   "propellerId": "apc-15x10e",
+   "rpm": 7502.438640594482,
+   "thrustN": 54.48439885203474,
+   "currentA": 155.26726296607487,
+   "inputPowerW": 2008.6604165101933
+  },
+  {
+   "motorId": "example-1000kv-outrunner",
+   "batteryId": "lipo-6s-5000",
+   "propellerId": "apc-10x5e",
+   "rpm": 17498.553872108463,
+   "thrustN": 52.04200478015631,
+   "currentA": 88.7065307149347,
+   "inputPowerW": 1827.6457072249168
+  },
+  {
+   "motorId": "example-1000kv-outrunner",
+   "batteryId": "lipo-6s-5000",
+   "propellerId": "apc-12x6e",
+   "rpm": 14367.336916923527,
+   "thrustN": 72.7490350208257,
+   "currentA": 147.7860959071033,
+   "inputPowerW": 2887.71818655535
+  },
+  {
+   "motorId": "example-1000kv-outrunner",
+   "batteryId": "lipo-6s-5000",
+   "propellerId": "apc-13x6.5e",
+   "rpm": 12856.639552116398,
+   "thrustN": 80.2376214651272,
+   "currentA": 176.28981977138875,
+   "inputPowerW": 3354.2281889343135
+  },
+  {
+   "motorId": "example-1000kv-outrunner",
+   "batteryId": "lipo-6s-5000",
+   "propellerId": "apc-15x10e",
+   "rpm": 9380.368351936342,
+   "thrustN": 85.17400025212106,
+   "currentA": 241.87984241629547,
+   "inputPowerW": 4316.627054629786
+  }
+ ]
+}

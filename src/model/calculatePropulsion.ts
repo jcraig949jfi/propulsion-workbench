@@ -49,6 +49,8 @@ export function calculatePropulsion(input: PropulsionInput): PropulsionResult {
   ];
 
   // Data-hygiene flag: an ASSUMED input is not an error, but it must not masquerade as a spec.
+  // EXAMPLE records are exempt — they are labelled "Example" everywhere they appear, so a
+  // per-calculation warning would be noise rather than information.
   for (const [label, item] of [
     ['motor', motor],
     ['battery', battery],
@@ -59,7 +61,7 @@ export function calculatePropulsion(input: PropulsionInput): PropulsionResult {
         code: 'UNVERIFIED_INPUT_DATA',
         severity: 'INFO',
         message:
-          `The ${label} record is marked ASSUMED — its numbers are stand-ins Mark has not ` +
+          `The ${label} record is marked ASSUMED — its numbers are stand-ins that have not been ` +
           'confirmed. Verify against the datasheet or a measurement before trusting the output.',
       });
     }

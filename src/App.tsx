@@ -4,7 +4,7 @@
  */
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { calculatePropulsion } from './model/calculatePropulsion';
-import { CONSTANTS, placeholderConstants } from './model/constants';
+import { CONSTANTS } from './model/constants';
 import type { Battery, BenchTest, Motor, Propeller } from './model/types';
 import {
   SEED_BATTERIES,
@@ -14,6 +14,7 @@ import {
   availablePitches,
   nearestRealPropeller,
 } from './data/hardware';
+import { generateDemoBenchTests, isDemoTest } from './data/demoBenchTests';
 import {
   benchTestsToCsv,
   downloadFile,
@@ -139,6 +140,28 @@ export default function App(): ReactElement {
   };
 
   const unexported = benchTests.length > 0;
+  const demoLoaded = benchTests.some(isDemoTest);
+
+  const loadDemo = () => {
+    const demoMotor = motors.find((m) => m.id === 'example-700kv-outrunner') ?? motors[0];
+    const demoBattery =
+      batteries.find((b) => b.cells === 4 && b.capacityMah === 5000) ?? batteries[0];
+    const demoProps = propellers.filter(
+      (p) => p.diameterIn >= 10 && p.diameterIn <= 13 && p.manufacturer === 'APC',
+    );
+    const generated = generateDemoBenchTests({
+      motor: demoMotor,
+      battery: demoBattery,
+      propellers: demoProps,
+    });
+    const existing = new Set(benchTests.map((t) => t.id));
+    setBenchTests((prev) => [...prev, ...generated.filter((t) => !existing.has(t.id))]);
+    setMotorId(demoMotor.id);
+    setBatteryId(demoBattery.id);
+    setTab('history');
+  };
+
+  const clearDemo = () => setBenchTests((prev) => prev.filter((t) => !isDemoTest(t)));
 
   return (
     <div className="app">
@@ -150,10 +173,12 @@ export default function App(): ReactElement {
       </header>
 
       <div className="calibration-banner">
-        <strong>Model status: UNCALIBRATED.</strong>{' '}
-        {placeholderConstants().length} of the model's constants are unfitted placeholders, and no
-        reference case has been supplied yet. Absolute numbers are provisional; use this to compare
-        props and to plan bench tests, not to trust a thrust figure. See the Model tab.
+        <strong>Demonstration model.</strong> The motor and battery physics are standard and
+        sound; the propeller coefficients are a generic pitch-ratio model rather than data
+        measured from a specific blade. So the <em>trends and comparisons</em> are meaningful —
+        which prop pulls harder, where the current goes — while absolute thrust figures carry
+        maybe ±10–20%, worse at coarse pitch. Bench-test and record results to calibrate it. See
+        the Model tab for every constant and its origin.
       </div>
 
       <main className="layout">
@@ -285,6 +310,25 @@ export default function App(): ReactElement {
                 only. Export them — clearing site data would destroy them.
               </p>
             )}
+          </fieldset>
+
+          <fieldset>
+            <legend>Demo</legend>
+            {demoLoaded ? (
+              <button className="link-btn" onClick={clearDemo}>
+                Remove demo bench data
+              </button>
+            ) : (
+              <button className="link-btn" onClick={loadDemo}>
+                Load demo bench data
+              </button>
+            )}
+            <p className="footnote">
+              Adds a set of <strong>synthetic</strong> measurements so the record → error →
+              history views can be seen working without running a motor first. They are generated
+              from the model with a deliberate pitch-dependent bias, marked{' '}
+              <code>[DEMO DATA]</code>, and removable in one click. Not real bench results.
+            </p>
           </fieldset>
         </aside>
 

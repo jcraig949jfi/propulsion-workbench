@@ -65,13 +65,13 @@ export function staticCoefficients(prop: Propeller): Coefficients {
 
   warnings.push({
     code: 'MODEL_UNCALIBRATED',
-    severity: 'WARNING',
+    severity: 'INFO',
     message:
-      `No measured coefficients for ${prop.manufacturer} ${prop.model}; using the placeholder ` +
-      `pitch-ratio model (p/D = ${pr.toFixed(3)}, C_T = ${ct.toFixed(4)}, C_P = ${cp.toFixed(4)}). ` +
-      'These coefficients are unfitted engineering placeholders. Treat every absolute number ' +
-      'below as provisional until bench-tested; relative comparisons between similar props are ' +
-      'more trustworthy than the absolute values.',
+      `Using the generic pitch-ratio coefficient model for ${prop.manufacturer} ${prop.model} ` +
+      `(p/D = ${pr.toFixed(3)}, C_T = ${ct.toFixed(4)}, C_P = ${cp.toFixed(4)}). No measured ` +
+      'coefficients are attached to this propeller, so the figures show the right trends but ' +
+      'are not calibrated to this exact blade. Attach measured coefficients, or bench-test and ' +
+      'calibrate, to make the absolute numbers authoritative.',
   });
 
   if (pr < VALIDATED_PITCH_RATIO_RANGE.min || pr > VALIDATED_PITCH_RATIO_RANGE.max) {

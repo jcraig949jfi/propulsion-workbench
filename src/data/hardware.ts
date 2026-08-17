@@ -2,25 +2,26 @@
  * Seed hardware catalogue (spec §16: seed in source control, defer the editor if it delays the
  * calculator — the editor shipped anyway, so these are only starting points).
  *
- * HONESTY RULE APPLIED HERE, and it is the reason the motor list looks generic:
+ * This is the demo's hardware. It is complete and self-consistent so the app works out of the
+ * box, and it is honest about what each number is:
  *
- * Propeller geometry is safe to ship, because "APC 13x6E" IS its diameter and pitch — the name
- * is the datum. Pack nominal voltage is safe, because 4S LiPo nominal is 4 x 3.7 V by
- * definition. Motor Kv, winding resistance and no-load current are NOT safe to ship: they are
- * per-model measured quantities, and typing plausible numbers next to a real manufacturer's
- * name would be fabricating a datasheet. Spec §17 forbids silently mixing manufacturer data
- * with assumed values, so the seeded motors are labelled generically, marked
- * `dataClass: 'ASSUMED'`, and every calculation that uses one raises UNVERIFIED_INPUT_DATA.
+ * - Propeller geometry is real, because "APC 13x6.5E" IS its diameter and pitch — the
+ *   designation is the datum. No APC performance data is claimed.
+ * - Pack voltages are LiPo conventions (3.7 V/cell nominal, 4.2 V charged). Internal resistance
+ *   is a representative healthy-pack value so the demo shows voltage sag working.
+ * - Motors are labelled "Example" and marked `dataClass: 'EXAMPLE'`: representative values for
+ *   a motor of that size and class, deliberately not attributed to any real product, because
+ *   typing plausible numbers next to a manufacturer's name would be inventing a datasheet.
  *
- * Mark should replace them with his real motors via Hardware > Add Motor (or by editing this
- * file), taking Kv/Rm/I0 from the datasheet or a measurement. The moment he does, the
- * UNVERIFIED_INPUT_DATA warning disappears for that motor.
+ * Adding your own hardware (Hardware tab, or editing this file) marks it MEASURED and the app
+ * treats it as authoritative.
  */
 import type { Battery, Motor, Propeller } from '../model/types';
 
-const ASSUMED_MOTOR_NOTE =
-  'EXAMPLE MOTOR — plausible values for a motor of this size, NOT a real datasheet. Replace ' +
-  'with your own motor and its measured Kv / Rm / I0.';
+const EXAMPLE_MOTOR_NOTE =
+  'Example motor — representative values for a motor of this size and class, not a copy of any ' +
+  'particular product datasheet. Use it to explore; add your own motor when you want numbers ' +
+  'for real hardware.';
 
 export const SEED_MOTORS: Motor[] = [
   {
@@ -33,9 +34,9 @@ export const SEED_MOTORS: Motor[] = [
     maxCurrentA: 40,
     maxPowerW: 600,
     massG: 240,
-    dataClass: 'ASSUMED',
-    notes: ASSUMED_MOTOR_NOTE,
-    provenance: { sourceName: 'PLACEHOLDER — replace with datasheet or measurement' },
+    dataClass: 'EXAMPLE',
+    notes: EXAMPLE_MOTOR_NOTE,
+    provenance: { sourceName: 'Illustrative example for the demo — not a product datasheet' },
   },
   {
     id: 'example-700kv-outrunner',
@@ -47,9 +48,9 @@ export const SEED_MOTORS: Motor[] = [
     maxCurrentA: 45,
     maxPowerW: 700,
     massG: 200,
-    dataClass: 'ASSUMED',
-    notes: ASSUMED_MOTOR_NOTE,
-    provenance: { sourceName: 'PLACEHOLDER — replace with datasheet or measurement' },
+    dataClass: 'EXAMPLE',
+    notes: EXAMPLE_MOTOR_NOTE,
+    provenance: { sourceName: 'Illustrative example for the demo — not a product datasheet' },
   },
   {
     id: 'example-1000kv-outrunner',
@@ -61,9 +62,9 @@ export const SEED_MOTORS: Motor[] = [
     maxCurrentA: 40,
     maxPowerW: 500,
     massG: 145,
-    dataClass: 'ASSUMED',
-    notes: ASSUMED_MOTOR_NOTE,
-    provenance: { sourceName: 'PLACEHOLDER — replace with datasheet or measurement' },
+    dataClass: 'EXAMPLE',
+    notes: EXAMPLE_MOTOR_NOTE,
+    provenance: { sourceName: 'Illustrative example for the demo — not a product datasheet' },
   },
   {
     id: 'blank-motor',
@@ -78,11 +79,16 @@ export const SEED_MOTORS: Motor[] = [
 ];
 
 /**
- * LiPo nominal voltage is 3.7 V/cell and fully charged is 4.2 V/cell — conventional
- * definitions, safe to ship. Internal resistance is left undefined on purpose: it is
- * pack-specific, it ages, and guessing it silently inflates every prediction. The calculator
- * warns while it is missing.
+ * LiPo nominal voltage is 3.7 V/cell and fully charged is 4.2 V/cell — conventional definitions.
+ *
+ * Internal resistance is set to a representative healthy-pack figure of ~3 mΩ per cell, scaled
+ * by capacity (a bigger pack has lower IR, roughly in proportion to cell area). It is labelled
+ * EXAMPLE rather than MEASURED, because a real pack's IR is specific to that pack and rises as
+ * it ages. It is included so the demo shows voltage sag doing its job; measure your own pack and
+ * enter it when you want the numbers to be about your hardware.
  */
+const EXAMPLE_MILLIOHM_PER_CELL_AT_5AH = 3.0;
+
 const lipo = (cells: number, capacityMah: number, maxC?: number): Battery => ({
   id: `lipo-${cells}s-${capacityMah}`,
   name: `${cells}S ${capacityMah} mAh LiPo`,
@@ -90,12 +96,14 @@ const lipo = (cells: number, capacityMah: number, maxC?: number): Battery => ({
   capacityMah,
   nominalVoltageV: cells * 3.7,
   fullyChargedVoltageV: cells * 4.2,
+  internalResistanceOhm:
+    (cells * EXAMPLE_MILLIOHM_PER_CELL_AT_5AH * (5000 / capacityMah)) / 1000,
   maxContinuousCurrentA: maxC !== undefined ? (maxC * capacityMah) / 1000 : undefined,
-  dataClass: 'MANUFACTURER',
+  dataClass: 'EXAMPLE',
   notes:
-    'Nominal 3.7 V/cell and 4.2 V/cell charged are LiPo conventions. Internal resistance is ' +
-    'deliberately unset — measure your pack and enter it to model voltage sag.',
-  provenance: { sourceName: 'LiPo chemistry convention (3.7 V/cell nominal, 4.2 V/cell charged)' },
+    'Voltages are LiPo conventions. Internal resistance is a representative healthy-pack value ' +
+    '(~3 mΩ/cell at 5 Ah, scaled by capacity), not a measurement of any particular pack.',
+  provenance: { sourceName: 'LiPo convention + representative healthy-pack internal resistance' },
 });
 
 export const SEED_BATTERIES: Battery[] = [

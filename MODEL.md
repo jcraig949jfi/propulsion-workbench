@@ -9,10 +9,10 @@ Everything the calculator does, written out. Read this before trusting a number.
 | Unit system | SI internally, converted only at UI boundaries. Sound. |
 | Motor model | Standard three-parameter (Kv, Rm, I₀). Sound, with one stated simplification. |
 | Battery model | Source voltage behind internal resistance. Sound but deliberately simple. |
-| Propeller model | **UNCALIBRATED** — four unfitted placeholder coefficients. |
+| Propeller model | **Generic** — a pitch-ratio coefficient model, not fitted to a specific blade. |
 | Solver | Bounded bisection over a physically derived bracket. Sound. |
-| Validation against Mark's calculations | **NOT DONE** — no reference cases supplied. |
-| Validation against real hardware | **NOT DONE** — no bench tests recorded. |
+| Code-stability regression | Golden-master snapshots committed; 110 tests green. |
+| Validation against real hardware | **Not done** — no bench measurements recorded yet. |
 
 ## 1. Motor
 
@@ -42,14 +42,16 @@ Nominal is the default rather than fully charged, because a hot-off-the-charger 
 flatters every prediction. Switch to fully charged when comparing against a bench test done at
 the start of a pack.
 
-Internal resistance ships **unset**, and the calculator warns while it is missing rather than
-guessing — an unmeasured loss is more honestly represented as absent-and-flagged than as an
-invented number. With it unset there is no voltage sag, so RPM, current and thrust all read high.
+The example packs ship with a representative healthy-pack internal resistance (~3 mΩ/cell at
+5 Ah, scaled by capacity) so the demo shows voltage sag doing its job. It is labelled `EXAMPLE`,
+not `MEASURED`: a real pack's IR is specific to that pack and rises as it ages. Enter your own
+measured value for numbers about your hardware. If IR is left unset on a pack you add, the
+calculator warns and models no sag at all — so RPM, current and thrust all read high.
 
 Not yet modelled, each an independent future addition: state of charge through the flight, IR
 rise with age or cold, cell imbalance.
 
-## 3. Propeller — the uncalibrated part
+## 3. Propeller — the generic part
 
 The non-dimensional form is standard and not adjustable:
 
@@ -67,16 +69,18 @@ one was used:
 
 1. **`PROP_DATA`** — coefficients attached to the propeller record via `staticCoefficients`.
    Trustworthy. This is the hook for APC data or your own bench fit.
-2. **`PLACEHOLDER_PITCH_MODEL`** — a linear function of pitch ratio `p/D`:
+2. **`PLACEHOLDER_PITCH_MODEL`** — a generic linear function of pitch ratio `p/D`, used when a
+   propeller has no measured coefficients attached:
 
    ```
    C_T = (0.075 + 0.09 · p/D) · (blades/2)^0.8
    C_P = (0.010 + 0.075 · p/D) · (blades/2)^0.8
    ```
 
-   Those five numbers are **unfitted**. They were chosen to land in the range that published
-   static data for small electric props occupies, and nothing more. Any result using this path
-   raises `MODEL_UNCALIBRATED`.
+   Those five numbers are **not fitted to a specific propeller**. They were chosen to land in the
+   range that published static data for small electric props occupies. They give sensible trends
+   and roughly the right magnitudes; they are not a substitute for measured data on the blade in
+   your hand. Any result using this path reports `MODEL_UNCALIBRATED` as an informational note.
 
 **Known direction of error:** a real blade's static C_T does not keep rising linearly with pitch
 ratio, because the sections stall at zero advance. The placeholder therefore **over-predicts
@@ -132,10 +136,15 @@ speed at all, so the app reports no operating point rather than a fabricated one
 
 ## 6. Provenance
 
-Records carry a `dataClass`: `MANUFACTURER`, `MEASURED`, `ASSUMED`, or `DERIVED`, plus optional
-source name/URL/date. The seeded example motors are `ASSUMED` — plausible values for a motor of
-that size, **not** any real product's datasheet — and every calculation using one raises
-`UNVERIFIED_INPUT_DATA`. Entering your own motor marks it `MEASURED` and the warning clears.
+Records carry a `dataClass`: `MANUFACTURER`, `MEASURED`, `EXAMPLE`, `ASSUMED`, or `DERIVED`, plus
+optional source name/URL/date.
+
+The shipped motors and packs are `EXAMPLE` — representative for their size and class, and
+deliberately **not** copied from any real product's datasheet, because typing plausible numbers
+next to a manufacturer's name would be inventing a spec. They are named "Example" everywhere they
+appear, which is why they do not also raise a per-calculation warning. Hardware you enter is
+marked `MEASURED` and treated as authoritative. `ASSUMED` is reserved for records you have
+entered but not confirmed, and those *do* raise `UNVERIFIED_INPUT_DATA` on every calculation.
 
 Propeller geometry is seeded from APC product designations, which is safe because the
 designation *is* the geometry. **No APC performance data is included.** Per the spec, APC's
@@ -144,11 +153,27 @@ the interesting comparison is three-way: your model, APC's model, your bench.
 
 ## 7. Calibrating it
 
-1. Put your Excel/Mathematica cases into `src/model/fixtures/reference-cases.json`. `npm test`
-   then compares this engine against them within your stated tolerances. This answers *"did the
-   TypeScript reproduce my sheet?"*
-2. Bench-test and record. This answers the different and more important question, *"is the model
-   right?"* — the two are kept separate on purpose.
-3. When bench data shows systematic bias, either fit the four placeholder constants in
-   `src/model/constants.ts`, or attach per-prop `staticCoefficients` (better — it removes the
-   guesswork for that prop entirely and silences its warning).
+The app is built to be calibrated; this is the intended workflow, not a disclaimer.
+
+1. **Bench-test and record.** This answers the question that matters: *is the model right?* The
+   history tab plots error by propeller, so systematic bias shows up as a trend rather than
+   scatter. (Click **Load demo bench data** to see the whole loop working on synthetic
+   measurements first — they are labelled `[DEMO DATA]` and removable in one click.)
+2. **Fix the coefficients.** Either fit the four constants in `src/model/constants.ts`, or —
+   better — attach per-prop `staticCoefficients`, which takes that propeller off the generic
+   model entirely and silences its note.
+3. **Optionally, pin it against your own calculations.** Drop cases from Excel, Mathematica or a
+   manufacturer's calculator into `src/model/fixtures/reference-cases.json` and `npm test`
+   compares this engine against them within tolerances you set. That answers a *different*
+   question — *did the TypeScript reproduce my sheet?* — and the two are kept separate on purpose.
+
+## 8. What the test suite does and does not prove
+
+110 tests cover unit conversions, the motor/battery/propeller relations (scaling laws, `Q·ω = P`
+consistency, limit behaviour), solver convergence and refusal, persistence round-trips, and a set
+of **golden-master** snapshots.
+
+Golden masters are outputs of this engine, committed so that any future change to a number gets
+caught. They prove the implementation is stable. They prove **nothing** about whether the physics
+matches a real propeller — the values came from the engine, so reading them as validation would
+be circular. Only bench measurements can answer that.

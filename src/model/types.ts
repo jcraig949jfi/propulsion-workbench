@@ -14,8 +14,9 @@ export interface Provenance {
 /** Spec §17 — do not silently mix manufacturer, measured, assumed and derived values. */
 export type DataClass =
   | 'MANUFACTURER' // from a datasheet or manufacturer catalogue
-  | 'MEASURED' // Mark measured it
-  | 'ASSUMED' // a stand-in Mark has not confirmed
+  | 'MEASURED' // measured on the bench, or typed in from a datasheet by the user
+  | 'EXAMPLE' // illustrative hardware shipped with the demo; named "Example" in the UI
+  | 'ASSUMED' // a stand-in the user entered but has not confirmed
   | 'DERIVED'; // computed from other records
 
 export interface Motor {
