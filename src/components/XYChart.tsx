@@ -101,8 +101,12 @@ export function XYChart({
   const width = Math.max(340, Math.min(880, all.length * 26 + padL + padR));
 
   const xScale = makeScale(xs, padL, width - padR);
-  const yScale = makeScale(ys, padT, height - padB, true);
-  const y2Scale = y2M ? makeScale(y2s, padT, height - padB, true) : undefined;
+  // When both Y metrics share a unit (volts vs volts), they MUST share one scale — otherwise
+  // two independently auto-scaled axes draw a flat 11.1 V reference visually below a 11.05 V
+  // sag line and the comparison lies. Different units keep independent scales as before.
+  const sameUnit = y2M !== undefined && y2M.unit === yM.unit && y2M.unit !== '';
+  const yScale = makeScale(sameUnit ? [...ys, ...y2s] : ys, padT, height - padB, true);
+  const y2Scale = y2M ? (sameUnit ? yScale : makeScale(y2s, padT, height - padB, true)) : undefined;
 
   const path = (pts: SweepPoint[], get: (p: SweepPoint) => number | undefined, sc: Scale) =>
     pts

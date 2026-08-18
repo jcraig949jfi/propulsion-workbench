@@ -162,6 +162,7 @@ export function calculatePropulsion(input: PropulsionInput): PropulsionResult {
     mechanicalPowerW: mechPowerW,
     torqueNm,
     loadedVoltageV: vLoaded,
+    packVoltageV: vOc,
     motorEfficiency,
     // propEfficiency intentionally omitted — it is identically zero at zero airspeed.
     staticThrustPerShaftWattNPerW: shaftPowerW > 0 ? thrustN / shaftPowerW : undefined,

@@ -156,3 +156,23 @@ describe('clampRange', () => {
     expect(clampRange([], { min: 1, max: 2 })).toEqual({ min: 1, max: 2 });
   });
 });
+
+describe('pack voltage metric', () => {
+  it('reports the open-circuit voltage the sweep was computed at, flat across all points', () => {
+    const pts = sweep({ ...base, diameter: { min: 14, max: 18 }, pitch: { min: 7, max: 12 },
+      packVoltageV: 21.0 });
+    const vals = pts.map((p) => METRICS.packVoltageV.get(p));
+    expect(new Set(vals).size).toBe(1);
+    expect(vals[0]).toBe(21.0);
+  });
+
+  it('always sits above loaded voltage by exactly the I*R sag', () => {
+    const pts = sweep({ ...base, diameter: { min: 14, max: 18 }, pitch: { min: 7, max: 12 } });
+    for (const p of pts) {
+      const sag = METRICS.packVoltageV.get(p)! - METRICS.loadedVoltageV.get(p)!;
+      const ir = battery.internalResistanceOhm ?? 0;
+      expect(sag).toBeCloseTo((p.result.currentA ?? 0) * ir, 9);
+      expect(sag).toBeGreaterThanOrEqual(0);
+    }
+  });
+});

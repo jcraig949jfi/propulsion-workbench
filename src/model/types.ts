@@ -130,6 +130,9 @@ export interface PropulsionResult {
   mechanicalPowerW?: number;
   torqueNm?: number;
   loadedVoltageV?: number;
+  /** The open-circuit pack voltage this result was computed AT (slider/nominal/full). Constant
+   *  across a sweep — plotted, it is the reference line the loaded voltage sags away from. */
+  packVoltageV?: number;
   motorEfficiency?: number;
   /**
    * Undefined for a static test, and that is physics, not an omission: propulsive efficiency is

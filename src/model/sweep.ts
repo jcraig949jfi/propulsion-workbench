@@ -95,7 +95,8 @@ export type MetricKey =
   | 'torqueNm'
   | 'thrustPerWatt'
   | 'motorEfficiency'
-  | 'loadedVoltageV';
+  | 'loadedVoltageV'
+  | 'packVoltageV';
 
 export const METRICS: Record<MetricKey, MetricDef> = {
   diameter: {
@@ -134,6 +135,13 @@ export const METRICS: Record<MetricKey, MetricDef> = {
   motorEfficiency: {
     key: 'motorEfficiency', label: 'Motor efficiency', unit: '%', digits: 1,
     get: (p) => (p.result.motorEfficiency === undefined ? undefined : p.result.motorEfficiency * 100),
+  },
+  packVoltageV: {
+    // The open-circuit voltage the sweep was computed at — the slider setting. Deliberately a
+    // FLAT line: plot it on the same axis as loaded voltage and the gap between the two IS the
+    // I*R sag, point by point.
+    key: 'packVoltageV', label: 'Pack voltage (open-circuit)', unit: 'V', digits: 2,
+    get: (p) => p.result.packVoltageV,
   },
   loadedVoltageV: {
     // Terminal voltage UNDER LOAD: V_oc - I*R. Anti-correlated with current by construction,
