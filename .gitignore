@@ -4,3 +4,8 @@ dist/
 .DS_Store
 .vite/
 *.tsbuildinfo
+
+# local verification scratch
+shots/
+*.mjs
+gen-golden.ts

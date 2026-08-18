@@ -26,6 +26,54 @@ export function Warnings({ warnings }: { warnings: Warning[] }): ReactElement | 
   );
 }
 
+/**
+ * Compact sticky readout, shown on narrow screens only (CSS-gated).
+ *
+ * On a phone the controls and the numbers cannot both be on screen, and the whole point of the
+ * app is watching the numbers move as the prop changes — so the three that matter get pinned to
+ * the top of the viewport while everything else scrolls underneath.
+ */
+export function StickySummary({
+  result,
+  propeller,
+}: {
+  result: PropulsionResult;
+  propeller: { diameterIn: number; pitchIn: number };
+}): ReactElement {
+  const solved = result.diagnostics.converged && Number.isFinite(result.rpm);
+  const errors = result.warnings.filter((w) => w.severity === 'ERROR').length;
+  return (
+    <div className={`sticky-summary${errors ? ' has-error' : ''}`}>
+      <span className="ss-prop">
+        {propeller.diameterIn}×{propeller.pitchIn}
+      </span>
+      {solved ? (
+        <>
+          <span className="ss-item">
+            <b>{fmtInt(result.rpm)}</b> rpm
+          </span>
+          <span className="ss-item">
+            <b>{fmt(result.thrustKgF)}</b> kg
+          </span>
+          <span className="ss-item">
+            <b>{fmt(result.currentA, 1)}</b> A
+          </span>
+          <span className="ss-item ss-hide-xs">
+            <b>{fmtInt(result.inputPowerW)}</b> W
+          </span>
+        </>
+      ) : (
+        <span className="ss-item">no operating point — see warnings</span>
+      )}
+      {errors > 0 && (
+        <span className="ss-flag" title={`${errors} limit exceeded`}>
+          ⚠ {errors}
+        </span>
+      )}
+    </div>
+  );
+}
+
 interface Props {
   result: PropulsionResult;
   title: string;

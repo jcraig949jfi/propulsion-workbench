@@ -245,7 +245,7 @@ export function TestHistory({ tests, motors, propellers, onDelete }: HistoryProp
             <table>
               <thead>
                 <tr>
-                  <th>Date</th>
+                  <th className="col-optional">Date</th>
                   <th>Prop</th>
                   <th>Pred. RPM</th>
                   <th>Meas. RPM</th>
@@ -253,14 +253,14 @@ export function TestHistory({ tests, motors, propellers, onDelete }: HistoryProp
                   <th>Meas. thrust</th>
                   <th>Pred. A</th>
                   <th>Meas. A</th>
-                  <th>Notes</th>
+                  <th className="col-optional">Notes</th>
                   <th />
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((t) => (
                   <tr key={t.id}>
-                    <td>{new Date(t.timestamp).toLocaleDateString()}</td>
+                    <td className="col-optional">{new Date(t.timestamp).toLocaleDateString()}</td>
                     <td>{propName(t.propellerId)}</td>
                     <td>{fmt(t.predicted.rpm, 0)}</td>
                     <td>{fmt(t.measured.rpm, 0)}</td>
@@ -268,7 +268,7 @@ export function TestHistory({ tests, motors, propellers, onDelete }: HistoryProp
                     <td>{fmt(t.measured.thrustKgF)}</td>
                     <td>{fmt(t.predicted.currentA, 1)}</td>
                     <td>{fmt(t.measured.currentA, 1)}</td>
-                    <td className="notes-cell">{t.notes ?? ''}</td>
+                    <td className="notes-cell col-optional">{t.notes ?? ''}</td>
                     <td>
                       <button className="link-btn" onClick={() => onDelete(t.id)}>
                         delete

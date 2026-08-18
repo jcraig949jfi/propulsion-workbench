@@ -26,7 +26,12 @@ export function Chart({ points, yLabel, kind = 'bar', height = 220 }: Props): Re
     return <p className="muted">No plottable values — check the warnings above.</p>;
   }
 
-  const width = Math.max(320, usable.length * 56 + 70);
+  // Intrinsic width. Paired with `min-width` on the <svg> and an overflow-x wrapper, this gives
+  // both behaviours from one number: on a wide screen the SVG scales up to fill the container,
+  // and on a phone it keeps its intrinsic size and the container scrolls. Squeezing 30 props
+  // into 360 px would render the labels at about two pixels tall.
+  const perPoint = usable.length > 14 ? 44 : 56;
+  const width = Math.max(300, usable.length * perPoint + 70);
   const padL = 62;
   const padB = 42;
   const padT = 12;
@@ -42,7 +47,14 @@ export function Chart({ points, yLabel, kind = 'bar', height = 220 }: Props): Re
   const ticks = [0, 0.25, 0.5, 0.75, 1].map((f) => min + f * span);
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="chart" role="img" aria-label={yLabel}>
+    <div className="chart-scroll">
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        className="chart"
+        style={{ minWidth: width }}
+        role="img"
+        aria-label={yLabel}
+      >
       <text x={6} y={padT + 4} className="chart-axis-label">
         {yLabel}
       </text>
@@ -84,6 +96,7 @@ export function Chart({ points, yLabel, kind = 'bar', height = 220 }: Props): Re
           </g>
         );
       })}
-    </svg>
+      </svg>
+    </div>
   );
 }

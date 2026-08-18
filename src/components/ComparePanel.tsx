@@ -138,8 +138,8 @@ export function ComparePanel({
               <th>RPM</th>
               <th>Thrust</th>
               <th>Current</th>
-              <th>Power</th>
-              <th>N/W</th>
+              <th className="col-optional">Power</th>
+              <th className="col-optional">N/W</th>
               <th />
             </tr>
           </thead>
@@ -160,8 +160,8 @@ export function ComparePanel({
                   <td>{fmtInt(result.rpm)}</td>
                   <td>{fmt(result.thrustKgF)} kg</td>
                   <td>{fmt(result.currentA, 1)} A</td>
-                  <td>{fmtInt(result.inputPowerW)} W</td>
-                  <td>{fmt(result.staticThrustPerInputWattNPerW, 4)}</td>
+                  <td className="col-optional">{fmtInt(result.inputPowerW)} W</td>
+                  <td className="col-optional">{fmt(result.staticThrustPerInputWattNPerW, 4)}</td>
                   <td>
                     {prop.id === selected.id ? (
                       <span className="muted">current</span>

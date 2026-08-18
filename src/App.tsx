@@ -24,7 +24,7 @@ import {
   saveWorkspace,
   serializeWorkspace,
 } from './storage/persistence';
-import { OperatingPoint } from './components/OperatingPoint';
+import { OperatingPoint, StickySummary } from './components/OperatingPoint';
 import { ComparePanel } from './components/ComparePanel';
 import { RecordTest, TestHistory } from './components/BenchPanel';
 import { HardwareEditor } from './components/HardwareEditor';
@@ -58,6 +58,12 @@ export default function App(): ReactElement {
   const [airDensity, setAirDensity] = useState(CONSTANTS.airDensitySeaLevelIsa.value);
   const [useFullyCharged, setUseFullyCharged] = useState(false);
   const [tab, setTab] = useState<Tab>('compare');
+  // On a phone the sidebar's secondary controls push the tabs a full screen down, so they
+  // collapse behind a toggle. On a desktop the sidebar is a column with space to spare, so
+  // everything stays open and the toggle is hidden by CSS.
+  const [showMore, setShowMore] = useState(
+    () => typeof window === 'undefined' || window.matchMedia('(min-width: 901px)').matches,
+  );
   const [importMessage, setImportMessage] = useState<string>();
 
   const motor = motors.find((m) => m.id === motorId) ?? motors[0];
@@ -172,14 +178,11 @@ export default function App(): ReactElement {
         </span>
       </header>
 
-      <div className="calibration-banner">
-        <strong>Demonstration model.</strong> The motor and battery physics are standard and
-        sound; the propeller coefficients are a generic pitch-ratio model rather than data
-        measured from a specific blade. So the <em>trends and comparisons</em> are meaningful —
-        which prop pulls harder, where the current goes — while absolute thrust figures carry
-        maybe ±10–20%, worse at coarse pitch. Bench-test and record results to calibrate it. See
-        the Model tab for every constant and its origin.
-      </div>
+      <ModelBanner />
+
+      {/* Phone only: keeps the answer on screen while the sliders are being worked. On a
+          desktop the operating point is already visible beside the controls. */}
+      <StickySummary result={result} propeller={propeller} />
 
       <main className="layout">
         <aside className="panel hardware">
@@ -261,6 +264,12 @@ export default function App(): ReactElement {
             </p>
           </fieldset>
 
+          <button className="more-toggle" onClick={() => setShowMore((v) => !v)} aria-expanded={showMore}>
+            {showMore ? 'Fewer options' : 'More options — conditions, data, demo'}
+          </button>
+
+          {showMore && (
+            <>
           <fieldset>
             <legend>Conditions</legend>
             <label className="inline">
@@ -330,6 +339,8 @@ export default function App(): ReactElement {
               <code>[DEMO DATA]</code>, and removable in one click. Not real bench results.
             </p>
           </fieldset>
+            </>
+          )}
         </aside>
 
         <div className="main-column">
@@ -410,6 +421,38 @@ export default function App(): ReactElement {
           {tab === 'model' && <ModelPanel />}
         </div>
       </main>
+    </div>
+  );
+}
+
+/**
+ * The accuracy caveat. It has to be visible — it is the difference between "engineering tool"
+ * and "confident nonsense" — but on a phone the full paragraph ate a third of the first screen
+ * before any control was reachable. So it collapses to one line on narrow screens and stays
+ * open on a desktop, where the space is free.
+ */
+function ModelBanner(): ReactElement {
+  const [open, setOpen] = useState(
+    () => typeof window === 'undefined' || window.matchMedia('(min-width: 901px)').matches,
+  );
+  return (
+    <div className={`calibration-banner${open ? ' open' : ''}`}>
+      <button className="banner-toggle" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
+        <strong>Demonstration model</strong>
+        <span className="banner-hint">
+          {open ? 'hide' : 'trends solid · absolutes ±10–20% — tap for detail'}
+        </span>
+      </button>
+      {open && (
+        <p className="banner-body">
+          The motor and battery physics are standard and sound; the propeller coefficients are a
+          generic pitch-ratio model rather than data measured from a specific blade. So the{' '}
+          <em>trends and comparisons</em> are meaningful — which prop pulls harder, where the
+          current goes — while absolute thrust figures carry maybe ±10–20%, worse at coarse pitch.
+          Bench-test and record results to calibrate it. See the Model tab for every constant and
+          its origin.
+        </p>
+      )}
     </div>
   );
 }

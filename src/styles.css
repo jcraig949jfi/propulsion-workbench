@@ -171,3 +171,217 @@ td.neg { color: var(--accent); }
 
 .prose-list { font-size: 13.5px; line-height: 1.6; padding-left: 20px; }
 code { font-family: var(--mono); font-size: 0.92em; background: var(--bg); padding: 1px 4px; border-radius: 3px; }
+
+/* ==========================================================================================
+   RESPONSIVE / TOUCH
+   Desktop-first above; everything below adapts the same markup for a phone. Three problems
+   are being solved, in order of how much they hurt:
+     1. the operating point scrolls out of view exactly when the sliders are being used
+     2. a 30-point chart squeezed into 360 px renders its labels about two pixels tall
+     3. sub-16px form controls make iOS zoom the whole page on focus, and it never zooms back
+   ========================================================================================== */
+
+/* Never let the page scroll sideways as a whole — only designated containers scroll.
+   The load-bearing rule is `min-width: 0` on the grid children: a grid item defaults to
+   `min-width: auto`, so its column refuses to shrink below its content's min-content width. A
+   long option string in the motor <select> was therefore widening the whole page past the
+   viewport, and body overflow-x was clipping the text rather than wrapping it. */
+html { -webkit-text-size-adjust: 100%; }
+body { overflow-x: hidden; }
+.layout > * { min-width: 0; }
+.panel { min-width: 0; }
+
+/* A <select> takes its min-content width from its longest option unless told otherwise. */
+select { max-width: 100%; text-overflow: ellipsis; }
+.hardware select, .form-grid select, .controls-row select { width: 100%; min-width: 0; }
+
+/* Charts and tables scroll inside their own box, with momentum on iOS. */
+.chart-scroll,
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+.chart { width: 100%; height: auto; display: block; }
+
+/* Sticky compact readout — phone only, revealed by the media query below. */
+.sticky-summary { display: none; }
+
+@media (max-width: 900px) {
+  .app { padding: 10px 12px 56px; }
+
+  header { gap: 6px; margin-bottom: 8px; }
+  header h1 { font-size: 19px; }
+  .tagline { font-size: 12px; }
+
+  .calibration-banner {
+    font-size: 12.5px;
+    padding: 9px 11px;
+    margin-bottom: 12px;
+  }
+
+  .layout { gap: 12px; }
+  .main-column { gap: 12px; }
+  .panel { padding: 13px 14px; border-radius: 5px; }
+
+  /* The answer, pinned. Sits under nothing else, so it is always the topmost thing on screen
+     while the diameter and pitch sliders are being dragged further down the page. */
+  .sticky-summary {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin: 0 -12px 10px;
+    padding: 8px 12px;
+    background: var(--panel);
+    border-top: 1px solid var(--line);
+    border-bottom: 2px solid var(--accent);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .sticky-summary::-webkit-scrollbar { display: none; }
+  .sticky-summary.has-error { border-bottom-color: var(--error); }
+  .ss-prop {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--ink);
+    background: var(--accent-soft);
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .ss-item { white-space: nowrap; }
+  .ss-item b { font-family: var(--mono); font-size: 16px; color: var(--ink); font-weight: 600; }
+  .ss-flag { margin-left: auto; color: var(--error); font-weight: 700; white-space: nowrap; }
+
+  /* Readout: two columns, still legible, primaries still dominant. */
+  .readout { grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+  .readout dd { font-size: 16px; }
+  .readout .primary dd { font-size: 21px; }
+  .readout .alt { font-size: 11px; }
+
+  /* Tabs become one swipeable strip rather than three stacked rows. */
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin: 0 -12px;
+    padding: 0 12px;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { white-space: nowrap; padding: 9px 14px; }
+
+  /* Tables: drop the columns that are nice-to-have, tighten the rest. */
+  .col-optional { display: none; }
+  table { font-size: 12px; }
+  th, td { padding: 7px 8px; }
+  .notes-cell { max-width: 180px; }
+
+  .form-grid { grid-template-columns: 1fr 1fr; gap: 8px 10px; }
+  .form-grid .wide { grid-column: 1 / -1; }
+  .controls-row { flex-direction: column; gap: 10px; }
+  .controls-row select { width: 100%; }
+
+  .footnote { font-size: 12px; }
+  .warning { font-size: 12.5px; }
+  .warning-code { font-size: 10px; }
+}
+
+/* Very narrow phones (iPhone SE and similar). */
+@media (max-width: 380px) {
+  .readout { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .ss-hide-xs { display: none; }
+  header h1 { font-size: 17px; }
+}
+
+/* --- touch targets ------------------------------------------------------------------------
+   Pointer-based rather than width-based: a tablet is wide but still finger-driven. 44 px is
+   the long-standing minimum comfortable target. */
+@media (pointer: coarse) {
+  .primary-btn { min-height: 44px; padding: 10px 18px; }
+  .link-btn { min-height: 40px; display: flex; align-items: center; }
+  td .link-btn { min-height: 38px; padding: 4px 6px; margin: -4px -6px; }
+  .tab { min-height: 42px; }
+
+  select, input[type='text'], input[type='number'], input:not([type]) {
+    min-height: 42px;
+  }
+
+  /* 16px is the threshold below which iOS Safari zooms the page on focus — and it never zooms
+     back out. The long selector list is deliberate: the class-based form rules above set
+     `font: inherit`, which out-specifies a bare `select, input` and silently reinstates 15px. */
+  select,
+  input,
+  textarea,
+  .hardware select,
+  .hardware input,
+  .form-grid input,
+  .form-grid select,
+  .controls-row select,
+  fieldset input[type='number'] {
+    font-size: 16px;
+  }
+
+  /* Buttons do not trigger the zoom, but 13px is small for a thumb to aim at. */
+  .tab, .link-btn, .primary-btn, .banner-toggle { font-size: 14px; }
+
+  input[type='range'] {
+    height: 34px;
+    padding: 6px 0;
+  }
+  input[type='range']::-webkit-slider-thumb {
+    width: 26px;
+    height: 26px;
+  }
+  input[type='checkbox'] { width: 20px; height: 20px; }
+
+  /* A visible hint that a table scrolls, since there is no hover to discover it with. */
+  .table-wrap { scrollbar-width: thin; }
+}
+
+/* Collapsible accuracy banner (see ModelBanner in App.tsx). */
+.banner-toggle {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.banner-hint { color: var(--muted); font-size: 12px; font-weight: 400; }
+.banner-body { margin: 6px 0 0; }
+@media (min-width: 901px) {
+  .banner-toggle { cursor: default; }
+  .banner-hint { display: none; }
+}
+
+/* Sidebar "more options" toggle — phone only; the desktop sidebar has room for everything. */
+.more-toggle {
+  display: none;
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 10px;
+  background: var(--bg);
+  color: var(--accent);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+@media (max-width: 900px) {
+  .more-toggle { display: block; }
+}
