@@ -136,7 +136,10 @@ export const METRICS: Record<MetricKey, MetricDef> = {
     get: (p) => (p.result.motorEfficiency === undefined ? undefined : p.result.motorEfficiency * 100),
   },
   loadedVoltageV: {
-    key: 'loadedVoltageV', label: 'Loaded voltage', unit: 'V', digits: 2,
+    // Terminal voltage UNDER LOAD: V_oc - I*R. Anti-correlated with current by construction,
+    // so on any sweep it moves opposite to thrust/current/power. That is voltage sag working,
+    // not an error — the label says "sag" so the chart explains itself.
+    key: 'loadedVoltageV', label: 'Loaded voltage (sags with current)', unit: 'V', digits: 2,
     get: (p) => p.result.loadedVoltageV,
   },
 };
