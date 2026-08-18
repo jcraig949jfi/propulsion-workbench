@@ -49,14 +49,26 @@ See `MODEL.md` for every equation and every constant's origin.
 
 ---
 
-## It is already live
+## It is already live — and every version runs side by side
 
-**https://jcraig949jfi.github.io/propulsion-workbench/**
+| | |
+|---|---|
+| **latest** | https://jcraig949jfi.github.io/propulsion-workbench/ |
+| v1 — original MVP | https://jcraig949jfi.github.io/propulsion-workbench/v1/ |
+| v2 — self-contained demo + mobile | https://jcraig949jfi.github.io/propulsion-workbench/v2/ |
+| v3 — real hardware & range sweeps | https://jcraig949jfi.github.io/propulsion-workbench/v3/ |
+| what changed | https://jcraig949jfi.github.io/propulsion-workbench/versions.html |
+
+Releases do not overwrite each other. Each version is built from its own commit with its own
+lockfile — v1 is v1 as it actually shipped — and each keeps its **own saved bench tests**, so
+trying one cannot disturb another. A small switcher sits in the corner of every version.
+
+Build them all locally with `node scripts/build-versions.mjs` (output in `dist-all/`).
 
 Repo: https://github.com/jcraig949jfi/propulsion-workbench
 
 GitHub Pages is already configured to build from the Actions workflow, so there is nothing to
-switch on. Every push to `main` reruns the tests, rebuilds and redeploys automatically — and if
+switch on. Every push to `main` reruns the tests, rebuilds all versions and redeploys — and if
 the tests fail the deploy stops rather than shipping a broken calculator.
 
 ### Running it locally

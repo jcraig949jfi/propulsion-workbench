@@ -20,6 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # build-versions.mjs checks out earlier commits into git worktrees, so the full
+          # history is required — the default shallow clone cannot reach v1 and v2.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -32,13 +36,15 @@ jobs:
       # shipping one whose unit tests fail is worse than not shipping.
       - run: npm test
 
-      - run: npm run build
+      # Publishes every version side by side: / and /v3/ are the latest, /v1/ and /v2/ are
+      # the earlier releases built from their own commits and lockfiles.
+      - run: node scripts/build-versions.mjs
 
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: dist-all
 
   deploy:
     needs: build

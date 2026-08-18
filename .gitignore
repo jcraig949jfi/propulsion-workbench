@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-all/
 *.local
 .DS_Store
 .vite/
@@ -9,6 +10,7 @@ dist/
 shots/
 # one-off diagnostic scripts (mobile-check.mjs is kept -- it is the reusable one)
 diag.mjs
+vercheck.mjs
 tabs-check.mjs
 fold.mjs
 desk.mjs
