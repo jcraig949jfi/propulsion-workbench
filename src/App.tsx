@@ -28,11 +28,12 @@ import {
 import { OperatingPoint, StickySummary } from './components/OperatingPoint';
 import { ComparePanel } from './components/ComparePanel';
 import { ExplorePanel } from './components/ExplorePanel';
+import { ThrottlePanel } from './components/ThrottlePanel';
 import { RecordTest, TestHistory } from './components/BenchPanel';
 import { HardwareEditor } from './components/HardwareEditor';
 import { MotorPicker } from './components/MotorPicker';
 
-type Tab = 'explore' | 'compare' | 'record' | 'history' | 'hardware' | 'model';
+type Tab = 'explore' | 'throttle' | 'compare' | 'record' | 'history' | 'hardware' | 'model';
 
 export default function App(): ReactElement {
   const stored = useMemo(() => loadWorkspace(), []);
@@ -389,6 +390,7 @@ export default function App(): ReactElement {
             {(
               [
                 ['explore', 'Explore range'],
+                ['throttle', 'Throttle response'],
                 ['compare', 'Compare props'],
                 ['record', 'Record test'],
                 ['history', `Test history (${benchTests.length})`],
@@ -415,6 +417,16 @@ export default function App(): ReactElement {
               packVoltageV={packV}
               onSelect={(p) => setPropId(p.id)}
               selectedId={propeller.id}
+            />
+          )}
+
+          {tab === 'throttle' && (
+            <ThrottlePanel
+              motor={motor}
+              battery={battery}
+              propeller={propeller}
+              airDensityKgM3={airDensity}
+              packVoltageV={packV}
             />
           )}
 

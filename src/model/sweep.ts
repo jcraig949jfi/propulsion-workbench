@@ -21,6 +21,8 @@ export interface SweepPoint {
   result: PropulsionResult;
   /** True when any rating was exceeded — charts render these differently. */
   overLimit: boolean;
+  /** Set by voltageSweep: this point's average motor voltage as % of full pack voltage. */
+  throttlePct?: number;
 }
 
 export interface SweepInput {
@@ -48,6 +50,56 @@ export function propsInRange(
         p.pitchIn <= pitch.max,
     )
     .sort((a, b) => a.diameterIn - b.diameterIn || a.pitchIn - b.pitchIn);
+}
+
+/**
+ * Throttle-response sweep (Mark's ask, 2026-08-18): hold motor, battery and ONE propeller
+ * fixed, and vary the average voltage the motor sees from near zero up to the full pack
+ * voltage. An ESC's PWM throttle sets that average voltage, so this curve reads directly as
+ * "what happens to RPM, thrust and current as the stick comes up" — the same approximation the
+ * pack-voltage slider makes, swept instead of set. Documented in MODEL.md; ignores switching
+ * losses and low-duty non-linearity.
+ *
+ * Points where the solver finds no operating point are EXCLUDED, and that is physics: below
+ * some voltage the stall current cannot overcome the no-load current and the prop simply does
+ * not turn. The curve honestly starts where the prop starts.
+ */
+export interface VoltageSweepInput {
+  motor: Motor;
+  battery: Battery;
+  propeller: Propeller;
+  /** Full-throttle pack voltage — the top of the sweep (the slider's setting). */
+  packVoltageMaxV: number;
+  /** Lowest throttle fraction to evaluate, default 10%. */
+  minFraction?: number;
+  /** Number of points, default 25. */
+  steps?: number;
+  airDensityKgM3?: number;
+}
+
+export function voltageSweep(input: VoltageSweepInput): SweepPoint[] {
+  const { motor, battery, propeller, packVoltageMaxV, airDensityKgM3 } = input;
+  const steps = Math.max(2, input.steps ?? 25);
+  const minFraction = Math.min(Math.max(input.minFraction ?? 0.1, 0.01), 1);
+  const out: SweepPoint[] = [];
+  for (let i = 0; i < steps; i += 1) {
+    const fraction = minFraction + ((1 - minFraction) * i) / (steps - 1);
+    const result = calculatePropulsion({
+      motor,
+      battery,
+      propeller,
+      airDensityKgM3,
+      packVoltageV: packVoltageMaxV * fraction,
+    });
+    if (!result.diagnostics.converged || !Number.isFinite(result.rpm)) continue;
+    out.push({
+      propeller,
+      result,
+      overLimit: result.warnings.some((w) => w.severity === 'ERROR'),
+      throttlePct: fraction * 100,
+    });
+  }
+  return out;
 }
 
 export function sweep(input: SweepInput): SweepPoint[] {
@@ -96,7 +148,8 @@ export type MetricKey =
   | 'thrustPerWatt'
   | 'motorEfficiency'
   | 'loadedVoltageV'
-  | 'packVoltageV';
+  | 'packVoltageV'
+  | 'throttlePct';
 
 export const METRICS: Record<MetricKey, MetricDef> = {
   diameter: {
@@ -136,11 +189,16 @@ export const METRICS: Record<MetricKey, MetricDef> = {
     key: 'motorEfficiency', label: 'Motor efficiency', unit: '%', digits: 1,
     get: (p) => (p.result.motorEfficiency === undefined ? undefined : p.result.motorEfficiency * 100),
   },
+  throttlePct: {
+    // Only populated by voltageSweep — the prop-family sweep runs at one fixed voltage.
+    key: 'throttlePct', label: 'Throttle', unit: '%', independent: true, digits: 0,
+    get: (p) => p.throttlePct,
+  },
   packVoltageV: {
     // The open-circuit voltage the sweep was computed at — the slider setting. Deliberately a
     // FLAT line: plot it on the same axis as loaded voltage and the gap between the two IS the
     // I*R sag, point by point.
-    key: 'packVoltageV', label: 'Pack voltage (open-circuit)', unit: 'V', digits: 2,
+    key: 'packVoltageV', label: 'Pack voltage (open-circuit)', unit: 'V', independent: true, digits: 2,
     get: (p) => p.result.packVoltageV,
   },
   loadedVoltageV: {

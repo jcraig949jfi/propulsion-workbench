@@ -4,7 +4,7 @@
  * and the ordering the charts rely on must be guaranteed here rather than assumed there.
  */
 import { describe, expect, it } from 'vitest';
-import { METRICS, clampRange, groupSeries, propsInRange, sweep } from '../sweep';
+import { METRICS, clampRange, groupSeries, propsInRange, sweep, voltageSweep } from '../sweep';
 import { SEED_BATTERIES, SEED_MOTORS, SEED_PROPELLERS } from '../../data/hardware';
 
 const motor = SEED_MOTORS.find((m) => m.id === 'axi-4130-20-v3')!;
@@ -174,5 +174,48 @@ describe('pack voltage metric', () => {
       expect(sag).toBeCloseTo((p.result.currentA ?? 0) * ir, 9);
       expect(sag).toBeGreaterThanOrEqual(0);
     }
+  });
+});
+
+describe('voltageSweep — the throttle-response curve', () => {
+  const prop = SEED_PROPELLERS.find((p) => p.id === 'apc-11x5.5e')!;
+  const vMax = 11.1;
+  const pts = voltageSweep({ motor, battery, propeller: prop, packVoltageMaxV: vMax });
+
+  it('produces a curve ordered by voltage', () => {
+    expect(pts.length).toBeGreaterThan(10);
+    const vs = pts.map((p) => p.result.packVoltageV!);
+    expect([...vs].sort((a, b) => a - b)).toEqual(vs);
+  });
+
+  it('rpm, thrust and current all RISE with voltage — the throttle behaviour Mark described', () => {
+    for (let i = 1; i < pts.length; i += 1) {
+      expect(pts[i].result.rpm).toBeGreaterThan(pts[i - 1].result.rpm);
+      expect(pts[i].result.thrustN!).toBeGreaterThan(pts[i - 1].result.thrustN!);
+      expect(pts[i].result.currentA!).toBeGreaterThan(pts[i - 1].result.currentA!);
+    }
+  });
+
+  it('tops out at the full pack voltage with throttle = 100%', () => {
+    const top = pts[pts.length - 1];
+    expect(top.result.packVoltageV!).toBeCloseTo(vMax, 9);
+    expect(top.throttlePct!).toBeCloseTo(100, 9);
+  });
+
+  it('keeps the same propeller at every point — only voltage varies', () => {
+    expect(new Set(pts.map((p) => p.propeller.id)).size).toBe(1);
+  });
+
+  it('never emits a NaN row — non-spinning points are excluded, not reported', () => {
+    const wide = voltageSweep({
+      motor, battery, propeller: prop, packVoltageMaxV: vMax, minFraction: 0.01, steps: 50,
+    });
+    for (const p of wide) expect(Number.isFinite(p.result.rpm)).toBe(true);
+    expect(wide.length).toBeLessThanOrEqual(50);
+  });
+
+  it('the throttle metric reads through METRICS like any other axis', () => {
+    expect(METRICS.throttlePct.get(pts[0])).toBeCloseTo(10, 6);
+    expect(METRICS.throttlePct.get(pts[pts.length - 1])).toBeCloseTo(100, 6);
   });
 });

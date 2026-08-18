@@ -94,7 +94,7 @@ the tests fail the deploy stops rather than shipping a broken calculator.
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm test         # 146 tests
+npm test         # 154 tests
 npm run build    # production build into dist/
 ```
 
@@ -106,6 +106,11 @@ npm run build    # production build into dist/
 the right with any warnings underneath. The diameter and pitch sliders snap to **real catalogue
 propellers** — they never interpolate, because a value halfway between a 13×6 and a 13×8 is not a
 propeller you can buy or test.
+
+**Throttle response.** Holds the selected motor, battery and propeller fixed and sweeps the
+average motor voltage from low stick to full pack voltage — RPM, thrust, current and power as
+the throttle comes up. An ESC's PWM makes throttle position and average motor voltage the same
+lever, to first order. The curve starts where the prop starts turning.
 
 **Explore range.** The v2 view. Two range sliders define a family of real propellers; the chart
 below plots it with axes you choose. It also names the most efficient prop in the window that

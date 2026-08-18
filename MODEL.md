@@ -11,7 +11,7 @@ Everything the calculator does, written out. Read this before trusting a number.
 | Battery model | Source voltage behind internal resistance. Sound but deliberately simple. |
 | Propeller model | **Generic** — a pitch-ratio coefficient model, not fitted to a specific blade. |
 | Solver | Bounded bisection over a physically derived bracket. Sound. |
-| Code-stability regression | Golden-master snapshots committed; 146 tests green. |
+| Code-stability regression | Golden-master snapshots committed; 154 tests green. |
 | Validation against real hardware | **Not done** — no bench measurements recorded yet. |
 
 ## 1. Motor
@@ -41,7 +41,12 @@ loaded voltage        V    = Voc − I·R_internal
 Pack open-circuit voltage is a slider, 3.0 to 4.2 V per cell, defaulting to the 3.7 V/cell
 nominal — a hot-off-the-charger 4.2 V/cell flatters every prediction, so it is not the default.
 
-**The same slider approximates part throttle.** An ESC chops the supply with PWM, and to first
+**The same slider approximates part throttle**, and the Throttle-response tab sweeps it as a
+curve: one propeller, voltage from low stick to full pack, RPM/thrust/current against throttle
+percent. Points below the voltage where the prop can overcome no-load losses are excluded — the
+curve honestly starts where the prop starts.
+
+**Why the approximation works:** An ESC chops the supply with PWM, and to first
 order the motor sees a proportionally reduced voltage, so half throttle behaves roughly like half
 the pack voltage. It is an approximation and worth naming as one: it ignores switching losses,
 the ESC's own resistance at low duty cycle, and the fact that a real ESC's response is not
@@ -180,7 +185,7 @@ The app is built to be calibrated; this is the intended workflow, not a disclaim
 
 ## 8. What the test suite does and does not prove
 
-146 tests cover unit conversions, range sweeps and series grouping, motor filtering, the motor/battery/propeller relations (scaling laws, `Q·ω = P`
+154 tests cover unit conversions, range sweeps and series grouping, motor filtering, the motor/battery/propeller relations (scaling laws, `Q·ω = P`
 consistency, limit behaviour), solver convergence and refusal, persistence round-trips, and a set
 of **golden-master** snapshots.
 
