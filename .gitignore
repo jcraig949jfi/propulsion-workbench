@@ -11,6 +11,7 @@ shots/
 # one-off diagnostic scripts (mobile-check.mjs is kept -- it is the reusable one)
 diag.mjs
 vercheck.mjs
+barcheck.mjs
 tabs-check.mjs
 fold.mjs
 desk.mjs

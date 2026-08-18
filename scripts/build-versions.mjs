@@ -29,6 +29,7 @@ const VERSIONS = [
     id: 'v1',
     ref: '8462813',
     name: 'v1 — original MVP',
+    short: 'Original',
     blurb:
       'The first build. Physics engine, operating point, prop comparison, bench-test log. ' +
       'Desktop-first layout, and it presents itself as gated on reference data it does not have.',
@@ -37,6 +38,7 @@ const VERSIONS = [
     id: 'v2',
     ref: 'c48a061',
     name: 'v2 — self-contained demo',
+    short: 'Demo + mobile',
     blurb:
       'Reframed as a working demonstration rather than a blocked milestone, with synthetic ' +
       'demo bench data on a button, and the mobile pass: sticky readout, scrolling charts, ' +
@@ -46,6 +48,7 @@ const VERSIONS = [
     id: 'v3',
     ref: 'HEAD',
     name: 'v3 — real hardware & range sweeps',
+    short: 'Latest',
     blurb:
       'Seven real AXI motors from their datasheets, 44 APC sizes, diameter/pitch range ' +
       'sliders, and charts where you choose both axes plus a second quantity on a right-hand ' +
@@ -91,31 +94,62 @@ function copyDir(from, to) {
   }
 }
 
-/** A small bar injected into every build so you can hop between versions from inside one. */
+/**
+ * The version bar injected into every build.
+ *
+ * Deliberately a sticky strip across the top rather than a corner pill: the point is that a
+ * visitor should not have to *discover* that other versions exist. It states the count, names
+ * each version, and marks the one being viewed.
+ *
+ * It also nudges the app's own sticky readout down by its height, so the two do not overlap on
+ * a phone (v3 pins an operating-point summary to top: 0).
+ */
+const BAR_H = 40;
+
 function switcherHtml(currentId, prefix) {
   const links = VERSIONS.map((v) => {
-    const href = `${prefix}${v.id}/`;
-    const cls = v.id === currentId ? 'vsw-link vsw-current' : 'vsw-link';
-    return `<a class="${cls}" href="${href}" title="${v.name}">${v.id}</a>`;
+    const current = v.id === currentId;
+    return `<a class="vb-item${current ? ' vb-current' : ''}" href="${prefix}${v.id}/" title="${v.name}">` +
+      `<b>${v.id}</b><span class="vb-name">${v.short}</span>` +
+      `${current ? '<span class="vb-you">viewing</span>' : ''}</a>`;
   }).join('');
   return `
-<div id="version-switcher">
-  <span class="vsw-label">version</span>${links}
-  <a class="vsw-about" href="${prefix}versions.html">what changed?</a>
+<div id="version-bar">
+  <span class="vb-lead"><b>${VERSIONS.length} versions</b><span class="vb-lead-long"> of this app are live &mdash; try them</span>:</span>
+  <span class="vb-items">${links}</span>
+  <a class="vb-about" href="${prefix}versions.html">what changed?</a>
 </div>
 <style>
-  #version-switcher{position:fixed;right:10px;bottom:10px;z-index:9999;display:flex;align-items:center;
-    gap:4px;padding:5px 8px;border-radius:999px;font:13px/1 system-ui,-apple-system,"Segoe UI",sans-serif;
-    background:rgba(28,33,39,.94);color:#c9d2dc;border:1px solid rgba(255,255,255,.14);
-    box-shadow:0 2px 10px rgba(0,0,0,.3);backdrop-filter:blur(4px)}
-  #version-switcher .vsw-label{opacity:.65;font-size:11px;text-transform:uppercase;letter-spacing:.05em;
-    margin-right:2px}
-  #version-switcher a{color:#c9d2dc;text-decoration:none;padding:5px 9px;border-radius:999px;min-height:0}
-  #version-switcher a:hover{background:rgba(255,255,255,.12)}
-  #version-switcher .vsw-current{background:#2f6fb0;color:#fff;font-weight:600}
-  #version-switcher .vsw-about{font-size:11.5px;opacity:.75;padding-left:6px}
-  @media (max-width:600px){#version-switcher{right:8px;bottom:8px;font-size:12px}
-    #version-switcher .vsw-about{display:none}}
+  :root{--vb-h:${BAR_H}px}
+  #version-bar{position:sticky;top:0;z-index:9999;display:flex;align-items:center;gap:8px;
+    min-height:var(--vb-h);padding:5px 12px;box-sizing:border-box;overflow-x:auto;
+    scrollbar-width:none;white-space:nowrap;
+    font:13px/1.2 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:#123a5e;color:#eaf2fa;border-bottom:2px solid #2f8fd8}
+  #version-bar::-webkit-scrollbar{display:none}
+  .vb-lead{opacity:.92;flex:0 0 auto}
+  .vb-lead b{font-weight:700}
+  .vb-items{display:flex;gap:6px;flex:0 0 auto}
+  #version-bar a{display:inline-flex;align-items:center;gap:5px;text-decoration:none;
+    color:#eaf2fa;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.28);
+    border-radius:999px;padding:6px 11px;min-height:32px;flex:0 0 auto}
+  #version-bar a:hover{background:rgba(255,255,255,.24)}
+  #version-bar a b{font-weight:700}
+  .vb-name{opacity:.85}
+  .vb-current{background:#fff !important;color:#123a5e !important;border-color:#fff !important;
+    font-weight:600}
+  .vb-you{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;opacity:.7}
+  .vb-about{background:none !important;border:0 !important;text-decoration:underline !important;
+    opacity:.9;padding-left:4px !important}
+  /* v3 pins its own summary to the top; keep it clear of this bar. */
+  .sticky-summary{top:var(--vb-h) !important}
+  @media (max-width:760px){
+    #version-bar{gap:6px;padding:5px 10px}
+    .vb-lead{font-size:12px}
+    .vb-lead-long,.vb-name,.vb-you{display:none}
+    #version-bar a{padding:6px 10px}
+    .vb-about{font-size:12px;padding-left:2px !important}
+  }
 </style>
 `;
 }
@@ -123,7 +157,10 @@ function switcherHtml(currentId, prefix) {
 function injectSwitcher(dir, currentId, prefix) {
   const indexPath = path.join(dir, 'index.html');
   let html = fs.readFileSync(indexPath, 'utf8');
-  html = html.replace('</body>', `${switcherHtml(currentId, prefix)}</body>`);
+  const bar = switcherHtml(currentId, prefix);
+  html = html.includes('<body>')
+    ? html.replace('<body>', `<body>${bar}`)
+    : html.replace('</body>', `${bar}</body>`);
   fs.writeFileSync(indexPath, html);
 }
 
@@ -198,21 +235,18 @@ for (const version of VERSIONS) {
   const dest = path.join(outDir, version.id);
   copyDir(path.join(wt, 'dist'), dest);
   injectSwitcher(dest, version.id, '../');
-  lastBuilt = dest;
+
+  // The newest version is ALSO served from the root. Copy it from the freshly built dist, not
+  // from the copy above — that one already has the bar injected, and injecting into it again
+  // produced two stacked bars at the root.
+  if (version === VERSIONS[VERSIONS.length - 1]) {
+    copyDir(path.join(wt, 'dist'), outDir);
+    injectSwitcher(outDir, version.id, '');
+    lastBuilt = dest;
+  }
 
   run('git', ['worktree', 'remove', '--force', wt], repoRoot);
   console.log(`  -> ${path.relative(repoRoot, dest)}`);
-}
-
-// The newest version is also served from the root, so a link already shared keeps working.
-if (lastBuilt) {
-  for (const entry of fs.readdirSync(lastBuilt, { withFileTypes: true })) {
-    const s = path.join(lastBuilt, entry.name);
-    const d = path.join(outDir, entry.name);
-    if (entry.isDirectory()) copyDir(s, d);
-    else fs.copyFileSync(s, d);
-  }
-  injectSwitcher(outDir, VERSIONS[VERSIONS.length - 1].id, '');
 }
 
 fs.writeFileSync(path.join(outDir, 'versions.html'), versionsPage());

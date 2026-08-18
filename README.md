@@ -61,7 +61,12 @@ See `MODEL.md` for every equation and every constant's origin.
 
 Releases do not overwrite each other. Each version is built from its own commit with its own
 lockfile — v1 is v1 as it actually shipped — and each keeps its **own saved bench tests**, so
-trying one cannot disturb another. A small switcher sits in the corner of every version.
+trying one cannot disturb another.
+
+Every version carries a **sticky bar across the top** saying that three versions are live, with
+one tap to switch between them and the current one marked. On a desktop the buttons are named
+(Original / Demo + mobile / Latest); on a phone they shorten to v1 / v2 / v3 so the bar still
+fits on one line.
 
 Build them all locally with `node scripts/build-versions.mjs` (output in `dist-all/`).
 
