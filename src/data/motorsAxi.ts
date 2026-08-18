@@ -9,6 +9,9 @@
  * this calculator cannot work without: **internal resistance** and **no-load current**. Kv alone
  * gives only unloaded speed.
  *
+ * The set spans 20 g / 58 W indoor motors up to a 1270 g / 3000 W giant, so the filters in the
+ * app have something to bite on.
+ *
  * ONE IMPORTANT CAVEAT, carried on every record. AXI's "max current" figure is a BURST rating
  * with a stated duration (typically 60 s, 20 s on the 5360). It is not a continuous rating. The
  * app treats it as the limit to warn against, and the duration is in `notes` — do not read a
@@ -24,6 +27,82 @@ const axiProvenance = (detailId: number) => ({
 });
 
 export const AXI_MOTORS: Motor[] = [
+  {
+    id: 'axi-2203-46-v2',
+    manufacturer: 'AXI',
+    model: '2203/46 Gold Line V2',
+    kvRpmPerVolt: 1720,
+    resistanceOhm: 0.199,
+    noLoadCurrentA: 0.5,
+    maxCurrentA: 9.5,
+    maxPowerW: 58,
+    massG: 20,
+    dataClass: 'MANUFACTURER',
+    notes:
+      'Indoor 3D/aerobatic, models up to 220 g. Max current 9.5 A rated for only 20 s. ' +
+      'Max efficiency 76%. 2S, 8x4.3 prop.',
+    provenance: axiProvenance(320),
+  },
+  {
+    id: 'axi-2204-54',
+    manufacturer: 'AXI',
+    model: '2204/54 Gold Line',
+    kvRpmPerVolt: 1400,
+    resistanceOhm: 0.32,
+    noLoadCurrentA: 0.35,
+    maxCurrentA: 7.5,
+    massG: 25.9,
+    dataClass: 'MANUFACTURER',
+    notes:
+      'Indoor aerobatic up to 280 g. Max current 7.5 A rated for only 30 s. Max efficiency ' +
+      '77%. 3S, props 7.5x3.5 to 9x5.',
+    provenance: axiProvenance(163),
+  },
+  {
+    id: 'axi-2208-20',
+    manufacturer: 'AXI',
+    model: '2208/20 Gold Line',
+    kvRpmPerVolt: 1820,
+    resistanceOhm: 0.089,
+    noLoadCurrentA: 0.8,
+    maxCurrentA: 16,
+    massG: 45,
+    dataClass: 'MANUFACTURER',
+    notes:
+      'Park/slow fly 250-650 g. Max current 16 A rated for 60 s. Max efficiency 82%. 2-3S, ' +
+      'props 7.5x4 to 8x4.',
+    provenance: axiProvenance(167),
+  },
+  {
+    id: 'axi-2208-34',
+    manufacturer: 'AXI',
+    model: '2208/34 Gold Line',
+    kvRpmPerVolt: 1100,
+    resistanceOhm: 0.26,
+    noLoadCurrentA: 0.35,
+    maxCurrentA: 8,
+    massG: 45,
+    dataClass: 'MANUFACTURER',
+    notes:
+      'Slow/park fly up to 500 g. Max current 8 A rated for 60 s. Max efficiency 81%. 3S, ' +
+      'props 9x3.8 to 9x6.',
+    provenance: axiProvenance(175),
+  },
+  {
+    id: 'axi-2212-20',
+    manufacturer: 'AXI',
+    model: '2212/20 Gold Line',
+    kvRpmPerVolt: 1150,
+    resistanceOhm: 0.135,
+    noLoadCurrentA: 0.7,
+    maxCurrentA: 16,
+    massG: 57,
+    dataClass: 'MANUFACTURER',
+    notes:
+      'Park/sport 400-800 g. Max current 16 A rated for 60 s. Max efficiency 82%. 2-3S, ' +
+      'props 9x4.5 to 10x5.',
+    provenance: axiProvenance(181),
+  },
   {
     id: 'axi-2217-20',
     manufacturer: 'AXI',

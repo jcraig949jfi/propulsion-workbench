@@ -29,7 +29,7 @@ interface Props {
   battery: Battery;
   propellers: Propeller[];
   airDensityKgM3: number;
-  useFullyChargedVoltage: boolean;
+  packVoltageV: number;
   onSelect: (p: Propeller) => void;
   selectedId: string;
 }
@@ -39,7 +39,7 @@ export function ExplorePanel({
   battery,
   propellers,
   airDensityKgM3,
-  useFullyChargedVoltage,
+  packVoltageV,
   onSelect,
   selectedId,
 }: Props): ReactElement {
@@ -69,9 +69,9 @@ export function ExplorePanel({
         diameter: clampRange(diameters, diameter),
         pitch: clampRange(pitches, pitch),
         airDensityKgM3,
-        useFullyChargedVoltage,
+        packVoltageV,
       }),
-    [motor, battery, propellers, diameter, pitch, airDensityKgM3, useFullyChargedVoltage, diameters, pitches],
+    [motor, battery, propellers, diameter, pitch, airDensityKgM3, packVoltageV, diameters, pitches],
   );
 
   const series = useMemo(() => groupSeries(points, seriesBy, xKey), [points, seriesBy, xKey]);

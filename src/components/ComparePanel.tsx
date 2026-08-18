@@ -26,7 +26,7 @@ interface Props {
   propellers: Propeller[];
   selected: Propeller;
   airDensityKgM3: number;
-  useFullyChargedVoltage: boolean;
+  packVoltageV: number;
   onSelect: (p: Propeller) => void;
 }
 
@@ -36,7 +36,7 @@ export function ComparePanel({
   propellers,
   selected,
   airDensityKgM3,
-  useFullyChargedVoltage,
+  packVoltageV,
   onSelect,
 }: Props): ReactElement {
   const [metric, setMetric] = useState<Metric>('thrust');
@@ -75,10 +75,10 @@ export function ComparePanel({
           battery,
           propeller: p,
           airDensityKgM3,
-          useFullyChargedVoltage,
+          packVoltageV,
         }),
       })),
-    [pool, motor, battery, airDensityKgM3, useFullyChargedVoltage],
+    [pool, motor, battery, airDensityKgM3, packVoltageV],
   );
 
   const metricValue = (r: (typeof rows)[number]): number => {

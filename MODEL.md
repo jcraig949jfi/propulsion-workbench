@@ -11,7 +11,7 @@ Everything the calculator does, written out. Read this before trusting a number.
 | Battery model | Source voltage behind internal resistance. Sound but deliberately simple. |
 | Propeller model | **Generic** — a pitch-ratio coefficient model, not fitted to a specific blade. |
 | Solver | Bounded bisection over a physically derived bracket. Sound. |
-| Code-stability regression | Golden-master snapshots committed; 130 tests green. |
+| Code-stability regression | Golden-master snapshots committed; 146 tests green. |
 | Validation against real hardware | **Not done** — no bench measurements recorded yet. |
 
 ## 1. Motor
@@ -38,9 +38,15 @@ open-circuit voltage  Voc  = nominal (default) or fully-charged, user's choice
 loaded voltage        V    = Voc − I·R_internal
 ```
 
-Nominal is the default rather than fully charged, because a hot-off-the-charger 4.2 V/cell
-flatters every prediction. Switch to fully charged when comparing against a bench test done at
-the start of a pack.
+Pack open-circuit voltage is a slider, 3.0 to 4.2 V per cell, defaulting to the 3.7 V/cell
+nominal — a hot-off-the-charger 4.2 V/cell flatters every prediction, so it is not the default.
+
+**The same slider approximates part throttle.** An ESC chops the supply with PWM, and to first
+order the motor sees a proportionally reduced voltage, so half throttle behaves roughly like half
+the pack voltage. It is an approximation and worth naming as one: it ignores switching losses,
+the ESC's own resistance at low duty cycle, and the fact that a real ESC's response is not
+perfectly linear near the bottom of the stick. The *shape* is right, and it beats the alternative
+of pretending every flight happens at wide-open throttle on a fresh pack.
 
 The example packs ship with a representative healthy-pack internal resistance (~3 mΩ/cell at
 5 Ah, scaled by capacity) so the demo shows voltage sag doing its job. It is labelled `EXAMPLE`,
@@ -174,7 +180,7 @@ The app is built to be calibrated; this is the intended workflow, not a disclaim
 
 ## 8. What the test suite does and does not prove
 
-130 tests cover unit conversions, range sweeps and series grouping, the motor/battery/propeller relations (scaling laws, `Q·ω = P`
+146 tests cover unit conversions, range sweeps and series grouping, motor filtering, the motor/battery/propeller relations (scaling laws, `Q·ω = P`
 consistency, limit behaviour), solver convergence and refusal, persistence round-trips, and a set
 of **golden-master** snapshots.
 

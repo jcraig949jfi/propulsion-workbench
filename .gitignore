@@ -12,6 +12,10 @@ shots/
 diag.mjs
 vercheck.mjs
 barcheck.mjs
+v31.mjs
+shot*.mjs
+final.mjs
+livecheck.mjs
 tabs-check.mjs
 fold.mjs
 desk.mjs

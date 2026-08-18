@@ -19,21 +19,37 @@ import type { Battery, Warning } from './types';
  * prediction. Mark can switch to fully-charged for bench comparisons, which is what a bench
  * test at the start of a pack actually measures.
  */
-export function openCircuitVoltageV(battery: Battery, useFullyCharged = false): number {
+export function openCircuitVoltageV(
+  battery: Battery,
+  useFullyCharged = false,
+  overrideV?: number,
+): number {
+  if (overrideV !== undefined && Number.isFinite(overrideV) && overrideV > 0) return overrideV;
   if (useFullyCharged && battery.fullyChargedVoltageV !== undefined) {
     return battery.fullyChargedVoltageV;
   }
   return battery.nominalVoltageV;
 }
 
+/** Volts per cell — the number modellers actually reason about (4.2 full, 3.7 nominal, 3.3 low). */
+export function voltsPerCell(battery: Battery, packVoltageV: number): number {
+  return battery.cells > 0 ? packVoltageV / battery.cells : Number.NaN;
+}
+
+/** Sensible slider bounds: 3.0 V/cell (about empty) to 4.2 V/cell (fresh off the charger). */
+export const CELL_V_MIN = 3.0;
+export const CELL_V_NOMINAL = 3.7;
+export const CELL_V_FULL = 4.2;
+
 /** Terminal voltage under load: V = V_oc - I * R_internal. */
 export function loadedVoltageV(
   battery: Battery,
   currentA: number,
   useFullyCharged = false,
+  overrideV?: number,
 ): number {
   const ir = battery.internalResistanceOhm ?? 0;
-  return openCircuitVoltageV(battery, useFullyCharged) - currentA * ir;
+  return openCircuitVoltageV(battery, useFullyCharged, overrideV) - currentA * ir;
 }
 
 /** C-rate the pack is being asked for — the number that tells you if a pack is being abused. */

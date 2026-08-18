@@ -109,6 +109,16 @@ export interface PropulsionInput {
   escResistanceOhm?: number;
   /** Use the fully-charged voltage instead of nominal. Defaults to nominal (conservative). */
   useFullyChargedVoltage?: boolean;
+  /**
+   * Explicit pack open-circuit voltage, overriding both the nominal figure and
+   * `useFullyChargedVoltage`. Two uses, and they are the same lever:
+   *   - pack state of charge: a 4S reads ~16.8 V fresh and ~14 V near the end
+   *   - part throttle: an ESC chops the supply, and to first order that scales the voltage the
+   *     motor sees, so half throttle behaves roughly like half the pack voltage
+   * The second is an approximation — see MODEL.md — but it is the right shape, and nobody flies
+   * at full throttle all the time.
+   */
+  packVoltageV?: number;
 }
 
 export interface PropulsionResult {

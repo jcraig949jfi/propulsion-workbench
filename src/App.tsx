@@ -5,6 +5,7 @@
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { calculatePropulsion } from './model/calculatePropulsion';
 import { CONSTANTS } from './model/constants';
+import { CELL_V_FULL, CELL_V_MIN, CELL_V_NOMINAL, voltsPerCell } from './model/battery';
 import type { Battery, BenchTest, Motor, Propeller } from './model/types';
 import {
   SEED_BATTERIES,
@@ -29,6 +30,7 @@ import { ComparePanel } from './components/ComparePanel';
 import { ExplorePanel } from './components/ExplorePanel';
 import { RecordTest, TestHistory } from './components/BenchPanel';
 import { HardwareEditor } from './components/HardwareEditor';
+import { MotorPicker } from './components/MotorPicker';
 
 type Tab = 'explore' | 'compare' | 'record' | 'history' | 'hardware' | 'model';
 
@@ -59,7 +61,8 @@ export default function App(): ReactElement {
     propellers.find((p) => p.diameterIn === 11 && p.pitchIn === 5.5)?.id ?? propellers[0].id,
   );
   const [airDensity, setAirDensity] = useState(CONSTANTS.airDensitySeaLevelIsa.value);
-  const [useFullyCharged, setUseFullyCharged] = useState(false);
+  // Pack open-circuit voltage. Held as volts-per-cell so it survives a change of pack size.
+  const [cellV, setCellV] = useState(CELL_V_NOMINAL);
   const [tab, setTab] = useState<Tab>('explore');
   // On a phone the sidebar's secondary controls push the tabs a full screen down, so they
   // collapse behind a toggle. On a desktop the sidebar is a column with space to spare, so
@@ -89,6 +92,8 @@ export default function App(): ReactElement {
     });
   }, [motors, batteries, propellers, benchTests]);
 
+  const packV = cellV * battery.cells;
+
   const result = useMemo(
     () =>
       calculatePropulsion({
@@ -96,9 +101,9 @@ export default function App(): ReactElement {
         battery,
         propeller,
         airDensityKgM3: airDensity,
-        useFullyChargedVoltage: useFullyCharged,
+        packVoltageV: packV,
       }),
-    [motor, battery, propeller, airDensity, useFullyCharged],
+    [motor, battery, propeller, airDensity, packV],
   );
 
   const diameters = availableDiameters(propellers);
@@ -191,17 +196,7 @@ export default function App(): ReactElement {
         <aside className="panel hardware">
           <h2>Hardware</h2>
 
-          <label>
-            Motor
-            <select value={motorId} onChange={(e) => setMotorId(e.target.value)}>
-              {motors.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.manufacturer} {m.model} — {m.kvRpmPerVolt} kV
-                  {m.dataClass === 'ASSUMED' ? ' (unverified)' : ''}
-                </option>
-              ))}
-            </select>
-          </label>
+          <MotorPicker motors={motors} selectedId={motorId} onSelect={setMotorId} />
 
           <label>
             Battery
@@ -213,6 +208,53 @@ export default function App(): ReactElement {
               ))}
             </select>
           </label>
+
+
+          <fieldset>
+            <legend>Pack voltage</legend>
+          <div className="voltage-control">
+            <div className="voltage-head">
+              <strong>{packV.toFixed(2)} V</strong> pack
+              <span className="muted">
+                {' '}
+                · {voltsPerCell(battery, packV).toFixed(2)} V/cell · {battery.cells}S
+              </span>
+            </div>
+            <input
+              type="range"
+              min={CELL_V_MIN}
+              max={CELL_V_FULL}
+              step={0.01}
+              value={cellV}
+              onChange={(e) => setCellV(Number(e.target.value))}
+              aria-label="Pack voltage per cell"
+            />
+            <div className="range-ends">
+              <span>{CELL_V_MIN.toFixed(1)} V/cell — flat</span>
+              <span>{CELL_V_FULL.toFixed(1)} — fresh</span>
+            </div>
+            <div className="voltage-presets">
+              {[
+                ['Flat', 3.3],
+                ['Nominal', CELL_V_NOMINAL],
+                ['Fresh', CELL_V_FULL],
+              ].map(([label, v]) => (
+                <button
+                  key={label as string}
+                  className={Math.abs(cellV - (v as number)) < 0.005 ? 'preset on' : 'preset'}
+                  onClick={() => setCellV(v as number)}
+                >
+                  {label as string}
+                </button>
+              ))}
+            </div>
+            <p className="footnote">
+              Pack voltage as it sags through a flight — and, to first order, the same lever as
+              throttle: an ESC chops the supply, so half throttle behaves roughly like half the
+              voltage. An approximation, but nobody flies at full throttle all the time.
+            </p>
+          </div>
+          </fieldset>
 
           <label>
             Propeller
@@ -275,15 +317,6 @@ export default function App(): ReactElement {
             <>
           <fieldset>
             <legend>Conditions</legend>
-            <label className="inline">
-              <input
-                type="checkbox"
-                checked={useFullyCharged}
-                onChange={(e) => setUseFullyCharged(e.target.checked)}
-              />
-              Fully charged pack ({battery.cells * 4.2} V) instead of nominal (
-              {battery.nominalVoltageV.toFixed(1)} V)
-            </label>
             <label>
               Air density (kg/m³)
               <input
@@ -379,7 +412,7 @@ export default function App(): ReactElement {
               battery={battery}
               propellers={propellers}
               airDensityKgM3={airDensity}
-              useFullyChargedVoltage={useFullyCharged}
+              packVoltageV={packV}
               onSelect={(p) => setPropId(p.id)}
               selectedId={propeller.id}
             />
@@ -392,7 +425,7 @@ export default function App(): ReactElement {
               propellers={propellers}
               selected={propeller}
               airDensityKgM3={airDensity}
-              useFullyChargedVoltage={useFullyCharged}
+              packVoltageV={packV}
               onSelect={(p) => setPropId(p.id)}
             />
           )}

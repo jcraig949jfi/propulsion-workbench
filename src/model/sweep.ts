@@ -31,6 +31,7 @@ export interface SweepInput {
   pitch: Range;
   airDensityKgM3?: number;
   useFullyChargedVoltage?: boolean;
+  packVoltageV?: number;
 }
 
 export function propsInRange(
@@ -50,7 +51,7 @@ export function propsInRange(
 }
 
 export function sweep(input: SweepInput): SweepPoint[] {
-  const { motor, battery, airDensityKgM3, useFullyChargedVoltage } = input;
+  const { motor, battery, airDensityKgM3, useFullyChargedVoltage, packVoltageV } = input;
   return propsInRange(input.propellers, input.diameter, input.pitch).map((propeller) => {
     const result = calculatePropulsion({
       motor,
@@ -58,6 +59,7 @@ export function sweep(input: SweepInput): SweepPoint[] {
       propeller,
       airDensityKgM3,
       useFullyChargedVoltage,
+      packVoltageV,
     });
     return {
       propeller,

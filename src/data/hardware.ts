@@ -144,6 +144,12 @@ const APC_PROVENANCE = {
  * rcdude), checked 2026-08-17. These ship as MANUFACTURER data.
  */
 const VERIFIED_E: Array<[number, number]> = [
+  // small end, confirmed on the black E-series listing
+  [5, 4.6], [5, 5], [5.5, 4.5],
+  [6, 4], [6, 4.5], [6, 5.5], [6, 6],
+  [7, 4],
+  [8, 6],
+  [9, 6],
   [10, 5], [10, 5.8], [10, 6], [10, 7], [10, 8], [10, 10],
   [11, 5.5], [11, 7], [11, 8], [11, 8.5], [11, 10],
   [12, 6], [12, 7], [12, 8], [12, 10], [12, 12],
@@ -160,6 +166,13 @@ const VERIFIED_E: Array<[number, number]> = [
  * availability before ordering, and flip the entry to MANUFACTURER once you have.
  */
 const UNVERIFIED_E: Array<[number, number]> = [
+  // small/low-pitch sizes filling the bottom of the range
+  [5, 3], [6, 3], [7, 3], [7, 5], [7, 6],
+  [8, 3.8], [8, 4], [8, 4.3], [8, 5],
+  [9, 3.8], [9, 4.5], [9, 5],
+  [10, 4], [10, 4.7],
+  [11, 3.8], [11, 4.7],
+  [12, 3.8], [12, 4.7],
   [13, 8], [13, 12],
   [14, 7],
   [15, 8], [15, 12],

@@ -404,3 +404,25 @@ select { max-width: 100%; text-overflow: ellipsis; }
 .legend-item { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
 .legend-item i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
 .legend-dashed i { background: none; border-top: 2px dashed var(--muted); height: 0; border-radius: 0; }
+
+/* ---- v3.1: motor picker, filters, specs, voltage ------------------------------------------ */
+.picker-actions { display: flex; gap: 14px; flex-wrap: wrap; margin: -6px 0 12px; }
+
+.motor-filters .filter-row { margin-bottom: 10px; }
+.filter-label { display: block; font-size: 12px; color: var(--ink); margin-bottom: 2px; }
+.motor-filters input[type='range'] { margin-top: 2px; }
+.filter-note { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.motor-specs .spec-list { display: grid; grid-template-columns: 1fr; gap: 0; margin: 0; }
+.spec-list > div { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0;
+  border-bottom: 1px solid var(--line); font-size: 12.5px; }
+.spec-list dt { color: var(--muted); }
+.spec-list dd { margin: 0; font-family: var(--mono); text-align: right; }
+.spec-missing dd { color: var(--muted); font-style: italic; font-family: inherit; }
+
+.voltage-control .voltage-head { font-size: 13px; margin-bottom: 2px; }
+.voltage-control .voltage-head strong { font-family: var(--mono); font-size: 16px; }
+.voltage-presets { display: flex; gap: 6px; margin-top: 6px; }
+.preset { flex: 1; background: var(--bg); color: var(--accent); border: 1px solid var(--line);
+  border-radius: 4px; padding: 6px 4px; font: inherit; font-size: 12px; cursor: pointer; }
+.preset.on { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }

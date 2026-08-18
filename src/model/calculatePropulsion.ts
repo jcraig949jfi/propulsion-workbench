@@ -83,7 +83,7 @@ export function calculatePropulsion(input: PropulsionInput): PropulsionResult {
     );
   }
 
-  const vOc = openCircuitVoltageV(battery, useFull);
+  const vOc = openCircuitVoltageV(battery, useFull, input.packVoltageV);
   const coeff = staticCoefficients(propeller);
   warnings.push(...coeff.warnings);
 
@@ -110,7 +110,7 @@ export function calculatePropulsion(input: PropulsionInput): PropulsionResult {
 
   // ---- derived quantities at the operating point -------------------------------------------
   const currentA = currentAtRpmA(rpm, vOc, motor.kvRpmPerVolt, rTotal);
-  const vLoaded = loadedVoltageV(battery, currentA, useFull);
+  const vLoaded = loadedVoltageV(battery, currentA, useFull, input.packVoltageV);
   const torqueNm = propTorqueNm(rpm, propeller, rho, coeff.cp);
   const thrustN = propThrustN(rpm, propeller, rho, coeff.ct);
   const shaftPowerW = propShaftPowerW(rpm, propeller, rho, coeff.cp);

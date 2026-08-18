@@ -29,6 +29,19 @@ battery fixed, sweep propeller diameter and pitch, and watch RPM, thrust, curren
   Split the family into one line per diameter (or per pitch) to see a two-variable sweep
   honestly on a flat chart.
 
+### Also new
+
+- **Small aeroplanes are covered.** Twelve real AXI motors now, from a **20 g / 58 W indoor**
+  unit up to a 1270 g giant, and propellers from **5″** diameter. Pitches run from 3″.
+- **Filter the motor list** by Kv, mass, max current and max power, or search by name — a
+  catalogue spanning 20 g to 1270 g is useless as a plain dropdown. A motor that does not
+  publish a figure is *kept and reported*, never silently hidden.
+- **See every parameter** of the selected motor, including which are unpublished and a link to
+  the datasheet each number came from.
+- **Pack voltage slider**, 3.0 to 4.2 V per cell with Flat / Nominal / Fresh presets. Nobody
+  flies at full throttle on a fresh pack all the time, and voltage is the lever that changes
+  everything downstream.
+
 **How much to trust the numbers.** The motor and battery physics are standard textbook relations
 and are sound. The propeller side uses a *generic* pitch-ratio coefficient model rather than
 coefficients measured from a specific blade. So:
@@ -81,7 +94,7 @@ the tests fail the deploy stops rather than shipping a broken calculator.
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm test         # 130 tests
+npm test         # 146 tests
 npm run build    # production build into dist/
 ```
 
