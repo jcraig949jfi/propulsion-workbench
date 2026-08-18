@@ -10,10 +10,24 @@ Runs entirely in the browser. No backend, no database, no accounts. Hosted on Gi
 
 ## What this is
 
-A **working demonstration** of the concept, complete and usable as it stands. It ships with
-example motors, LiPo packs and a grid of APC propeller sizes, so you can open it and immediately
-do the thing it exists for: hold a motor and battery fixed, sweep diameter and pitch, and watch
-RPM, thrust, current and power move.
+A **working demonstration** of the concept, complete and usable as it stands. Hold a motor and
+battery fixed, sweep propeller diameter and pitch, and watch RPM, thrust, current and power move.
+
+### New in v2
+
+- **Seven real AXI motors**, transcribed from the manufacturer's own specification tables and
+  carrying their datasheet URLs — AXI because it publishes internal resistance and no-load
+  current, the two numbers most makers omit and this calculator cannot work without. The
+  generic "Example" motors are still there for comparison.
+- **44 APC propeller sizes**, 10″ to 22″. Sizes confirmed against retail listings are marked as
+  manufacturer data; standard sizes not individually confirmed are marked unverified, and the
+  app says so when you pick one.
+- **Range sliders** — set a diameter *window* and a pitch *window* rather than one value at a
+  time. Every real catalogue prop inside becomes a point.
+- **Choose your own axes** — put anything on X, anything on the left Y, and a *second* quantity
+  on a right-hand axis, so thrust and current can be read together instead of toggled between.
+  Split the family into one line per diameter (or per pitch) to see a two-variable sweep
+  honestly on a flat chart.
 
 **How much to trust the numbers.** The motor and battery physics are standard textbook relations
 and are sound. The propeller side uses a *generic* pitch-ratio coefficient model rather than
@@ -50,7 +64,7 @@ the tests fail the deploy stops rather than shipping a broken calculator.
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm test         # 110 tests
+npm test         # 130 tests
 npm run build    # production build into dist/
 ```
 
@@ -63,8 +77,12 @@ the right with any warnings underneath. The diameter and pitch sliders snap to *
 propellers** — they never interpolate, because a value halfway between a 13×6 and a 13×8 is not a
 propeller you can buy or test.
 
-**Compare props.** Holds motor and battery fixed and sweeps diameter or pitch across the
-catalogue, as a table and a chart. Rows in red exceed a rated limit.
+**Explore range.** The v2 view. Two range sliders define a family of real propellers; the chart
+below plots it with axes you choose. It also names the most efficient prop in the window that
+stays inside every rating.
+
+**Compare props.** The simpler v1 view: steps one variable at a time across the catalogue, as a
+table and a chart. Rows in red exceed a rated limit.
 
 **Record test.** Enter measured RPM, thrust, current, voltage. The prediction-versus-measurement
 error appears as you type, and saving stores it in the browser.

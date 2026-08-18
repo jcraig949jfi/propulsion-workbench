@@ -385,3 +385,22 @@ select { max-width: 100%; text-overflow: ellipsis; }
 @media (max-width: 900px) {
   .more-toggle { display: block; }
 }
+
+/* ---- v2: range sweeps and configurable charts -------------------------------------------- */
+.explore-ranges { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 900px) { .explore-ranges { grid-template-columns: 1fr; gap: 8px; } }
+
+.range-control legend { font-size: 12.5px; color: var(--ink); }
+.range-count { color: var(--muted); font-weight: 400; }
+.range-row { display: grid; grid-template-columns: 34px 1fr; align-items: center; gap: 8px; margin-bottom: 4px; }
+.range-row span { font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.range-row input[type='range'] { margin-top: 0; }
+
+.axis-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px 14px; }
+.axis-controls select { width: 100%; }
+
+.chart-tick-alt { fill: var(--muted); font-style: italic; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 6px; font-size: 12px; color: var(--muted); }
+.legend-item { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.legend-item i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+.legend-dashed i { background: none; border-top: 2px dashed var(--muted); height: 0; border-radius: 0; }

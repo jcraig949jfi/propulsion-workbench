@@ -11,7 +11,7 @@ Everything the calculator does, written out. Read this before trusting a number.
 | Battery model | Source voltage behind internal resistance. Sound but deliberately simple. |
 | Propeller model | **Generic** — a pitch-ratio coefficient model, not fitted to a specific blade. |
 | Solver | Bounded bisection over a physically derived bracket. Sound. |
-| Code-stability regression | Golden-master snapshots committed; 110 tests green. |
+| Code-stability regression | Golden-master snapshots committed; 130 tests green. |
 | Validation against real hardware | **Not done** — no bench measurements recorded yet. |
 
 ## 1. Motor
@@ -136,6 +136,11 @@ speed at all, so the app reports no operating point rather than a fabricated one
 
 ## 6. Provenance
 
+The AXI motors are `MANUFACTURER` data with a datasheet URL on every record. One caveat travels
+with them: AXI's "max current" is a **burst** rating with a stated duration (60 s, and only 20 s
+on the 5360/20HD), not a continuous rating. The app warns when a prediction exceeds it; a green
+light there is not permission to hold that current for a whole flight.
+
 Records carry a `dataClass`: `MANUFACTURER`, `MEASURED`, `EXAMPLE`, `ASSUMED`, or `DERIVED`, plus
 optional source name/URL/date.
 
@@ -169,7 +174,7 @@ The app is built to be calibrated; this is the intended workflow, not a disclaim
 
 ## 8. What the test suite does and does not prove
 
-110 tests cover unit conversions, the motor/battery/propeller relations (scaling laws, `Q·ω = P`
+130 tests cover unit conversions, range sweeps and series grouping, the motor/battery/propeller relations (scaling laws, `Q·ω = P`
 consistency, limit behaviour), solver convergence and refusal, persistence round-trips, and a set
 of **golden-master** snapshots.
 

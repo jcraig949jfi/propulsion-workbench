@@ -128,8 +128,9 @@ export function calculatePropulsion(input: PropulsionInput): PropulsionResult {
       code: 'MOTOR_CURRENT_EXCEEDED',
       severity: 'ERROR',
       message:
-        `Predicted current ${currentA.toFixed(1)} A exceeds the motor's continuous rating ` +
-        `${motor.maxCurrentA} A by ${overPct}%.`,
+        `Predicted current ${currentA.toFixed(1)} A exceeds the motor's rated maximum ` +
+        `${motor.maxCurrentA} A by ${overPct}%. Note that manufacturers often quote this as a ` +
+        'burst rating with a time limit — check the datasheet for the duration.',
     });
   }
   if (motor.maxPowerW !== undefined && inputPowerW > motor.maxPowerW) {

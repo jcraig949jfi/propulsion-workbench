@@ -26,10 +26,11 @@ import {
 } from './storage/persistence';
 import { OperatingPoint, StickySummary } from './components/OperatingPoint';
 import { ComparePanel } from './components/ComparePanel';
+import { ExplorePanel } from './components/ExplorePanel';
 import { RecordTest, TestHistory } from './components/BenchPanel';
 import { HardwareEditor } from './components/HardwareEditor';
 
-type Tab = 'compare' | 'record' | 'history' | 'hardware' | 'model';
+type Tab = 'explore' | 'compare' | 'record' | 'history' | 'hardware' | 'model';
 
 export default function App(): ReactElement {
   const stored = useMemo(() => loadWorkspace(), []);
@@ -48,16 +49,18 @@ export default function App(): ReactElement {
   // Defaults chosen so the first screen shows a combination that sits inside its ratings — a
   // wall of red on load reads as "broken app" rather than "over-propped setup". Change any
   // selector to see the limit warnings do their job.
-  const [motorId, setMotorId] = useState(motors[0].id);
+  const [motorId, setMotorId] = useState(
+    motors.find((m) => m.id === 'axi-2826-10')?.id ?? motors[0].id,
+  );
   const [batteryId, setBatteryId] = useState(
-    batteries.find((b) => b.cells === 4 && b.capacityMah === 5000)?.id ?? batteries[0].id,
+    batteries.find((b) => b.cells === 3 && b.capacityMah === 5000)?.id ?? batteries[0].id,
   );
   const [propId, setPropId] = useState(
     propellers.find((p) => p.diameterIn === 11 && p.pitchIn === 5.5)?.id ?? propellers[0].id,
   );
   const [airDensity, setAirDensity] = useState(CONSTANTS.airDensitySeaLevelIsa.value);
   const [useFullyCharged, setUseFullyCharged] = useState(false);
-  const [tab, setTab] = useState<Tab>('compare');
+  const [tab, setTab] = useState<Tab>('explore');
   // On a phone the sidebar's secondary controls push the tabs a full screen down, so they
   // collapse behind a toggle. On a desktop the sidebar is a column with space to spare, so
   // everything stays open and the toggle is hidden by CSS.
@@ -352,6 +355,7 @@ export default function App(): ReactElement {
           <nav className="tabs">
             {(
               [
+                ['explore', 'Explore range'],
                 ['compare', 'Compare props'],
                 ['record', 'Record test'],
                 ['history', `Test history (${benchTests.length})`],
@@ -368,6 +372,18 @@ export default function App(): ReactElement {
               </button>
             ))}
           </nav>
+
+          {tab === 'explore' && (
+            <ExplorePanel
+              motor={motor}
+              battery={battery}
+              propellers={propellers}
+              airDensityKgM3={airDensity}
+              useFullyChargedVoltage={useFullyCharged}
+              onSelect={(p) => setPropId(p.id)}
+              selectedId={propeller.id}
+            />
+          )}
 
           {tab === 'compare' && (
             <ComparePanel

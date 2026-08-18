@@ -2,21 +2,26 @@
  * Seed hardware catalogue (spec §16: seed in source control, defer the editor if it delays the
  * calculator — the editor shipped anyway, so these are only starting points).
  *
- * This is the demo's hardware. It is complete and self-consistent so the app works out of the
- * box, and it is honest about what each number is:
+ * The catalogue, honest about what each number is:
  *
- * - Propeller geometry is real, because "APC 13x6.5E" IS its diameter and pitch — the
- *   designation is the datum. No APC performance data is claimed.
- * - Pack voltages are LiPo conventions (3.7 V/cell nominal, 4.2 V charged). Internal resistance
- *   is a representative healthy-pack value so the demo shows voltage sag working.
- * - Motors are labelled "Example" and marked `dataClass: 'EXAMPLE'`: representative values for
- *   a motor of that size and class, deliberately not attributed to any real product, because
- *   typing plausible numbers next to a manufacturer's name would be inventing a datasheet.
+ * - **Motors**: seven real AXI motors transcribed from the manufacturer's own specification
+ *   tables (see `motorsAxi.ts`), marked MANUFACTURER and carrying their datasheet URL. AXI is
+ *   used because it publishes internal resistance and no-load current, which most makers omit
+ *   and this calculator cannot work without. The three generic "Example" motors are kept as
+ *   EXAMPLE for comparison, plus one deliberately incomplete record that demonstrates the
+ *   calculator refusing to guess.
+ * - **Propellers**: geometry is real, because "APC 13x6.5E" IS its diameter and pitch — the
+ *   designation is the datum. Sizes confirmed in retail listings are MANUFACTURER; standard
+ *   sizes not individually confirmed are ASSUMED, which makes the app say so when one is
+ *   selected. No APC performance data is claimed anywhere.
+ * - **Packs**: voltages are LiPo conventions (3.7 V/cell nominal, 4.2 V charged); internal
+ *   resistance is a representative healthy-pack value so voltage sag is demonstrated.
  *
  * Adding your own hardware (Hardware tab, or editing this file) marks it MEASURED and the app
  * treats it as authoritative.
  */
 import type { Battery, Motor, Propeller } from '../model/types';
+import { AXI_MOTORS } from './motorsAxi';
 
 const EXAMPLE_MOTOR_NOTE =
   'Example motor — representative values for a motor of this size and class, not a copy of any ' +
@@ -24,6 +29,8 @@ const EXAMPLE_MOTOR_NOTE =
   'for real hardware.';
 
 export const SEED_MOTORS: Motor[] = [
+  // Real, datasheet-sourced motors first — these are what the app should be judged on.
+  ...AXI_MOTORS,
   {
     id: 'example-500kv-outrunner',
     manufacturer: 'Example',
@@ -123,45 +130,79 @@ export const SEED_BATTERIES: Battery[] = [
  * MODEL_UNCALIBRATED for it.
  */
 const APC_PROVENANCE = {
-  sourceName: 'APC Propellers — product designation (diameter x pitch, inches)',
+  sourceName: 'APC Propellers — E-series product designation (diameter x pitch, inches)',
   sourceUrl: 'https://www.apcprop.com/',
+  accessedDate: '2026-08-17',
   notes:
     'Geometry from the model designation only. No APC performance data is included; see ' +
-    'MODEL.md for how to add it, and spec §21 for why APC figures are a second model rather ' +
-    'than ground truth.',
+    'MODEL.md for how to attach measured coefficients, and why APC figures would be a second ' +
+    'model to compare against rather than ground truth.',
 };
 
-function apc(diameterIn: number, pitchIn: number, category = 'Thin Electric (E)'): Propeller {
-  const model = `${diameterIn}x${pitchIn}E`;
+/**
+ * Sizes confirmed present in retail E-series listings (innov8tivedesigns.com, altitudehobbies,
+ * rcdude), checked 2026-08-17. These ship as MANUFACTURER data.
+ */
+const VERIFIED_E: Array<[number, number]> = [
+  [10, 5], [10, 5.8], [10, 6], [10, 7], [10, 8], [10, 10],
+  [11, 5.5], [11, 7], [11, 8], [11, 8.5], [11, 10],
+  [12, 6], [12, 7], [12, 8], [12, 10], [12, 12],
+  [13, 6.5], [13, 10],
+  [14, 8.5], [14, 10], [14, 12],
+  [15, 6], [15, 10],
+  [20, 8],
+];
+
+/**
+ * Standard sizes that fill the gaps in the grid but that I did not individually confirm against
+ * a live listing. They are marked ASSUMED, which makes the app raise UNVERIFIED_INPUT_DATA when
+ * one is selected — the provenance machinery doing exactly the job it exists for. Confirm
+ * availability before ordering, and flip the entry to MANUFACTURER once you have.
+ */
+const UNVERIFIED_E: Array<[number, number]> = [
+  [13, 8], [13, 12],
+  [14, 7],
+  [15, 8], [15, 12],
+  [16, 8], [16, 10], [16, 12],
+  [17, 8], [17, 10], [17, 12],
+  [18, 8], [18, 10], [18, 12],
+  [19, 10], [19, 12],
+  [20, 10], [20, 13],
+  [22, 10], [22, 12],
+];
+
+function apc(diameterIn: number, pitchIn: number, verified: boolean): Propeller {
+  const pitchLabel = Number.isInteger(pitchIn) ? String(pitchIn) : String(pitchIn);
   return {
     id: `apc-${diameterIn}x${pitchIn}e`,
     manufacturer: 'APC',
-    model,
+    model: `${diameterIn}x${pitchLabel}E`,
     diameterIn,
     pitchIn,
     bladeCount: 2,
-    category,
+    category: 'Thin Electric (E)',
     sourceUrl: 'https://www.apcprop.com/',
-    dataClass: 'MANUFACTURER',
-    provenance: APC_PROVENANCE,
+    dataClass: verified ? 'MANUFACTURER' : 'ASSUMED',
+    provenance: verified
+      ? APC_PROVENANCE
+      : {
+          ...APC_PROVENANCE,
+          sourceName: 'APC E-series — standard size, listing not individually confirmed',
+          notes: 'Confirm this size is currently offered before ordering.',
+        },
+    notes: verified ? undefined : 'Size not individually confirmed against a live listing.',
   };
 }
 
 /**
- * A grid dense enough to make the diameter/pitch experiment meaningful (spec §8 Mode A: only
- * real, orderable props). These designations are all standard APC thin-electric sizes.
+ * The catalogue. Dense enough that a diameter/pitch range sweep has real hardware at every
+ * step, which is the point of Mode A: every point on a chart is a prop you can actually buy
+ * and bench-test.
  */
 export const SEED_PROPELLERS: Propeller[] = [
-  apc(10, 5), apc(10, 6), apc(10, 7), apc(10, 8), apc(10, 10),
-  apc(11, 5.5), apc(11, 7), apc(11, 8), apc(11, 10),
-  apc(12, 6), apc(12, 8), apc(12, 10), apc(12, 12),
-  apc(13, 6.5), apc(13, 8), apc(13, 10),
-  apc(14, 7), apc(14, 8.5), apc(14, 10), apc(14, 12),
-  apc(15, 8), apc(15, 10), apc(15, 12),
-  apc(16, 8), apc(16, 10), apc(16, 12),
-  apc(17, 8), apc(17, 10), apc(17, 12),
-  apc(18, 8), apc(18, 10), apc(18, 12),
-];
+  ...VERIFIED_E.map(([d, p]) => apc(d, p, true)),
+  ...UNVERIFIED_E.map(([d, p]) => apc(d, p, false)),
+].sort((a, b) => a.diameterIn - b.diameterIn || a.pitchIn - b.pitchIn);
 
 /** Distinct diameters and pitches present in a catalogue — drives the sliders. */
 export function availableDiameters(props: Propeller[]): number[] {
