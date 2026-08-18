@@ -5,7 +5,10 @@ dist/
 .vite/
 *.tsbuildinfo
 
-# local verification scratch
+# screenshots from local verification runs
 shots/
-*.mjs
-gen-golden.ts
+# one-off diagnostic scripts (mobile-check.mjs is kept -- it is the reusable one)
+diag.mjs
+tabs-check.mjs
+fold.mjs
+desk.mjs
